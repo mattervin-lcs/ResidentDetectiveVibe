@@ -400,7 +400,7 @@
 
     .demo-preview { background: var(--navy2); border: 1px solid rgba(0,129,198,0.2); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-sm); }
     .demo-preview-bar { background: rgba(0,0,0,0.3); padding: 9px 14px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-    .demo-preview-content { display: grid; grid-template-columns: 1fr 1fr; }
+    .demo-preview-content { display: grid; grid-template-columns: 1fr 1fr 1fr; }
     .demo-left { padding: 18px 20px; border-right: 1px solid rgba(255,255,255,0.06); }
     .demo-right { padding: 18px 20px; }
     .demo-case-num { font-family: 'Special Elite', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
@@ -541,7 +541,7 @@
     }
     .cta-card > * { position: relative; }
     .cta-card .section-body { margin: 0 auto 28px; text-align: center; max-width: 540px; }
-    .team-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 32px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.07); }
+    .team-row { display: flex; flex-direction: column; gap: 0; justify-content: center; margin-top: 32px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.07); }
     .team-chip {
       display: flex; align-items: center; gap: 8px;
       background: rgba(255,255,255,0.05);
@@ -580,7 +580,8 @@
     /* ── RESPONSIVE ── */
     @media (max-width: 1100px) {
       .hero-inner { grid-template-columns: 360px 1fr; gap: 36px; }
-      .audience-outputs-row, .demo-video-row, .faq-grid { grid-template-columns: 1fr; gap: 40px; }
+      .audience-outputs-row, .faq-grid { grid-template-columns: 1fr; gap: 40px; }
+      .demo-preview-content { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 860px) {
       .hero-inner, .what-grid, .how-inner { grid-template-columns: 1fr; }
@@ -649,57 +650,24 @@
           </div>
         </div>
 
-        <!-- App Preview with 3D tilt -->
-        <div class="tilt-wrap reveal">
-          <div class="hero-app-preview" id="tilt-card">
-            <div class="app-preview-bar">
-              <div class="app-preview-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div>
-              <div class="app-preview-url">residentdetective.lcsliving.com — Lifestyle Director Console</div>
+        <!-- Commercial video -->
+        <div class="reveal">
+          <div class="video-wrap" id="video-wrap">
+            <video id="rd-video" poster="assets/video-poster.jpg" preload="metadata" playsinline>
+              <source src="assets/resident-detective-overview.mp4" type="video/mp4" />
+            </video>
+            <div class="video-overlay" id="video-overlay" role="button" aria-label="Play Resident Detective commercial" tabindex="0">
+              <button class="play-btn" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+              </button>
             </div>
-            <div class="app-preview-inner">
-              <div class="app-config-panel">
-                <div class="app-step-label">Step 02 of 05 · Configure Session</div>
-                <div class="app-title">Build Your <span>Mystery</span></div>
-                <div class="app-field">
-                  <div class="app-field-label">Theme &amp; Setting</div>
-                  <div class="app-field-input">1920s Speakeasy — The Cat's Pajamas</div>
-                </div>
-                <div class="app-field">
-                  <div class="app-field-label">Session Duration</div>
-                  <div class="app-pills"><span class="app-pill">30 min</span><span class="app-pill">45 min</span><span class="app-pill active">60 min</span><span class="app-pill">90 min</span></div>
-                </div>
-                <div class="app-field">
-                  <div class="app-field-label">Cognitive Level</div>
-                  <div class="app-pills"><span class="app-pill">Light</span><span class="app-pill active">Standard</span><span class="app-pill">Challenging</span></div>
-                </div>
-                <div class="app-field">
-                  <div class="app-field-label">Roleplay Intensity</div>
-                  <div class="app-pills"><span class="app-pill active">Conversation</span><span class="app-pill">Light Role</span><span class="app-pill">Full Character</span></div>
-                </div>
-              </div>
-              <div class="app-preview-panel">
-                <div class="live-badge"><span class="live-dot"></span> Live Preview</div>
-                <div class="preview-card">
-                  <div class="case-label">Case File · Case #0428 · Era: 1925</div>
-                  <div class="case-title">A Whisper at The Sapphire Lounge</div>
-                  <div class="case-sub"><span id="hero-typewriter"></span><span class="type-caret" id="hero-caret"></span></div>
-                </div>
-                <div class="cast-row">
-                  <div class="cast-chip"><strong>EL</strong>Torch Singer</div>
-                  <div class="cast-chip"><strong>FR</strong>The Detective</div>
-                  <div class="cast-chip"><strong>RU</strong>Bartender</div>
-                  <div class="cast-chip"><strong>DO</strong>The Reporter</div>
-                  <div class="cast-chip"><strong>WA</strong>Club Owner</div>
-                </div>
-                <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue-light);margin-bottom:7px;">Materials Ready to Print</div>
-                <div class="materials-strip">
-                  <div class="material-chip">📄 5 Character Sheets</div>
-                  <div class="material-chip">📋 Facilitator Guide</div>
-                  <div class="material-chip">🃏 Clue Cards</div>
-                </div>
-              </div>
+            <div class="video-missing" id="video-missing">
+              <div class="video-missing-title">Video not found</div>
+              <div class="video-missing-sub">Place the commercial at <code>assets/resident-detective-overview.mp4</code> and refresh.</div>
             </div>
+            <button class="fullscreen-btn" id="fullscreen-btn" title="Fullscreen">⛶</button>
           </div>
+          <p class="video-caption">Double-click or ⛶ for fullscreen</p>
         </div>
       </div>
     </section>
@@ -934,9 +902,8 @@
     <!-- TRY IT + VIDEO -->
     <section id="demo" style="background:rgba(0,0,0,0.15);">
       <div class="container">
-        <div class="demo-video-row">
-          <!-- Interactive demo -->
-          <div class="reveal">
+        <!-- Interactive demo — full width now that video lives in the hero -->
+        <div class="reveal">
             <div class="section-eyebrow">Try It</div>
             <h2 class="section-headline" style="margin-bottom:6px;">Cast your own group.</h2>
             <p class="section-body" style="margin-bottom:16px;">This is a small preview of how the real tool behaves. Pick a theme, type the first names of a group — watch the cast and materials rebuild around them. Hit shuffle for a different story in the same setting.</p>
@@ -968,42 +935,30 @@
                   <div class="demo-cast-label">The Cast — Auto-Assigned</div>
                   <div class="demo-cast" id="demo-cast"></div>
                 </div>
-                <div class="demo-right">
+                <div class="demo-right" style="border-right: 1px solid rgba(255,255,255,0.06);">
                   <div class="demo-right-label"><span style="width:5px;height:5px;border-radius:50%;background:var(--green-light);display:inline-block;"></span>Materials Ready to Print</div>
                   <div class="demo-materials" id="demo-materials"></div>
-                  <div class="demo-summary-box">
+                </div>
+                <div class="demo-right">
+                  <div class="demo-right-label" style="color:var(--blue-light);">⚙ Session Settings</div>
+                  <div class="demo-summary-box" style="margin-top:0;">
                     <div class="demo-summary-box-label">Session Summary</div>
                     <div class="demo-summary-box-val" id="demo-summary"></div>
+                  </div>
+                  <div style="margin-top:14px;padding:10px 12px;background:rgba(0,129,198,0.07);border:1px solid rgba(0,129,198,0.18);border-radius:8px;">
+                    <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue-light);margin-bottom:8px;">What gets generated</div>
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                      <div style="font-size:11px;color:var(--cream2);display:flex;gap:6px;align-items:flex-start;"><span style="color:var(--green-light);flex-shrink:0;">▸</span>Original mystery title &amp; storyline</div>
+                      <div style="font-size:11px;color:var(--cream2);display:flex;gap:6px;align-items:flex-start;"><span style="color:var(--green-light);flex-shrink:0;">▸</span>Character sheet per named resident</div>
+                      <div style="font-size:11px;color:var(--cream2);display:flex;gap:6px;align-items:flex-start;"><span style="color:var(--green-light);flex-shrink:0;">▸</span>Scene-by-scene facilitator guide</div>
+                      <div style="font-size:11px;color:var(--cream2);display:flex;gap:6px;align-items:flex-start;"><span style="color:var(--green-light);flex-shrink:0;">▸</span>Printable clue &amp; evidence cards</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             <p class="demo-footnote">In the real tool, this step is followed by full AI generation — complete character backstories, a facilitator script, and print-ready PDFs, all written fresh for the group entered.</p>
           </div>
-
-          <!-- Video -->
-          <div class="reveal" id="watch">
-            <div class="section-eyebrow">See It in Action</div>
-            <h2 class="section-headline" style="margin-bottom:6px;">Watch the overview.</h2>
-            <p class="section-body" style="margin-bottom:16px;">The full workflow in two minutes — from a staff member opening the app to residents mid-mystery.</p>
-            <div class="video-wrap" id="video-wrap">
-              <video id="rd-video" poster="assets/video-poster.jpg" preload="metadata" playsinline>
-                <source src="assets/resident-detective-overview.mp4" type="video/mp4" />
-              </video>
-              <div class="video-overlay" id="video-overlay" role="button" aria-label="Play overview video" tabindex="0">
-                <button class="play-btn" aria-hidden="true">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
-                </button>
-              </div>
-              <div class="video-missing" id="video-missing">
-                <div class="video-missing-title">Video not found</div>
-                <div class="video-missing-sub">Place the overview video at <code>assets/resident-detective-overview.mp4</code> in this repository and refresh.</div>
-              </div>
-              <button class="fullscreen-btn" id="fullscreen-btn" title="Fullscreen">⛶</button>
-            </div>
-            <p class="video-caption">Click ⛶ or double-click the video for fullscreen</p>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -1066,11 +1021,15 @@
             Contact the Team
           </a>
           <div class="team-row">
-            <div class="team-chip"><div class="team-avatar av-1">ME</div>Matt Ervin</div>
-            <div class="team-chip"><div class="team-avatar av-2">GK</div>Gunnar Klyn</div>
-            <div class="team-chip"><div class="team-avatar av-3">JW</div>Jeff Wittstock</div>
-            <div class="team-chip"><div class="team-avatar av-4">BK</div>Brady Kohout</div>
-            <div class="team-chip"><div class="team-avatar av-5">JV</div>Jacob Vanden Berg</div>
+            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%;">
+              <div class="team-chip"><div class="team-avatar av-1">ME</div>Matt Ervin</div>
+              <div class="team-chip"><div class="team-avatar av-2">GK</div>Gunnar Klyn</div>
+              <div class="team-chip"><div class="team-avatar av-3">JW</div>Jeff Wittstock</div>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%;margin-top:10px;">
+              <div class="team-chip"><div class="team-avatar av-4">BK</div>Brady Kohout</div>
+              <div class="team-chip"><div class="team-avatar av-5">JV</div>Jacob Vanden Berg</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1127,48 +1086,9 @@
       });
     }
 
-    /* ════════ 3D TILT ON APP PREVIEW ════════ */
-    const tiltCard = document.getElementById('tilt-card');
-    if (!reducedMotion && window.matchMedia('(hover: hover)').matches && tiltCard) {
-      const wrap = tiltCard.parentElement;
-      wrap.addEventListener('mousemove', (e) => {
-        const r = wrap.getBoundingClientRect();
-        const px = (e.clientX - r.left) / r.width - 0.5;
-        const py = (e.clientY - r.top) / r.height - 0.5;
-        tiltCard.style.transform = `rotateY(${px * 5}deg) rotateX(${-py * 5}deg)`;
-      });
-      wrap.addEventListener('mouseleave', () => {
-        tiltCard.style.transition = 'transform 0.5s ease';
-        tiltCard.style.transform = 'rotateY(0) rotateX(0)';
-        setTimeout(() => tiltCard.style.transition = 'transform 0.15s ease-out', 500);
-      });
-    }
+    /* ════════ 3D TILT — removed (app preview replaced by video in hero) ════════ */
 
-    /* ════════ HERO TYPEWRITER ════════ */
-    const heroHook = '"The bandleader is dead, the saxophone is missing, and one of the regulars knows more than they\u2019re letting on. Six suspects. One quiet evening. Who silenced the music?"';
-    const twEl = document.getElementById('hero-typewriter');
-    const caret = document.getElementById('hero-caret');
-    if (reducedMotion) {
-      twEl.textContent = heroHook;
-      caret.style.display = 'none';
-    } else {
-      let i = 0;
-      const typeObs = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          typeObs.disconnect();
-          const tick = () => {
-            if (i <= heroHook.length) {
-              twEl.textContent = heroHook.slice(0, i++);
-              setTimeout(tick, 16);
-            } else {
-              setTimeout(() => caret.style.display = 'none', 2500);
-            }
-          };
-          setTimeout(tick, 500);
-        }
-      }, { threshold: 0.4 });
-      typeObs.observe(twEl.closest('.preview-card'));
-    }
+    /* ════════ HERO TYPEWRITER — removed with app preview ════════ */
 
     /* ════════ COUNT-UP STATS ════════ */
     function animateCount(el) {
