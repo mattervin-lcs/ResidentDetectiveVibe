@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resident Detective — AI-Generated Mystery Sessions for Senior Living</title>
+  <meta name="description" content="Resident Detective is an AI-powered tool that generates printable mystery and roleplay sessions for senior living communities. Learn how it works." />
+  <link rel="icon" type="image/png" href="assets/logo-mark.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@300;400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:       #0D1B2E;
+      --navy2:      #112338;
+      --navy3:      #1A3050;
+      --navy4:      #243d5e;
+      --blue:       #0081C6;
+      --blue-light: #2fa0e0;
+      --green:      #49A942;
+      --green-light:#65c45e;
+      --lime:       #B0BC22;
+      --cream:      #F0F4F8;
+      --cream2:     #dce8f0;
+      --muted:      #8aa4be;
+      --text:       #e8f2fa;
+      --radius: 14px; --radius-lg: 22px; --radius-xl: 28px;
+      --shadow: 0 16px 48px rgba(0,0,0,0.45);
+      --shadow-sm: 0 4px 18px rgba(0,0,0,0.3);
+      --glow-blue: 0 0 32px rgba(0,129,198,0.22);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--navy); color: var(--text); overflow-x: hidden; line-height: 1.6; }
+    button { font-family: inherit; }
+
+    /* ── BACKGROUND ── */
+    .bg-ambient {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 50% at 15% 0%, rgba(0,129,198,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 85% 100%, rgba(73,169,66,0.10) 0%, transparent 55%);
+    }
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: linear-gradient(rgba(0,129,198,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,129,198,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    /* ── SCROLL PROGRESS ── */
+    #scroll-progress {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: linear-gradient(90deg, var(--blue), var(--green), var(--lime));
+      z-index: 300; transition: width 0.08s linear;
+      box-shadow: 0 0 12px rgba(0,129,198,0.6);
+    }
+
+    /* ── LAYOUT ── */
+    .site-wrap { position: relative; z-index: 1; }
+    .container { max-width: 1380px; margin: 0 auto; padding: 0 36px; }
+    section { padding: 60px 0; scroll-margin-top: 76px; }
+    .section-divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 0; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(13,27,46,0.85);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      padding: 0 36px;
+    }
+    nav::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,129,198,0.45), rgba(73,169,66,0.35), transparent);
+    }
+    .nav-inner {
+      max-width: 1380px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px; gap: 24px;
+    }
+    .nav-logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
+    .nav-logo img { height: 50px; width: auto; display: block; transition: transform 0.25s ease, filter 0.25s ease; }
+    .nav-logo:hover img { transform: scale(1.04); filter: drop-shadow(0 0 10px rgba(0,129,198,0.5)); }
+    .nav-links { display: flex; gap: 4px; list-style: none; }
+    .nav-links a {
+      position: relative;
+      color: var(--muted); text-decoration: none;
+      font-size: 13px; font-weight: 500;
+      padding: 8px 14px; border-radius: 999px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-links a::after {
+      content: ""; position: absolute; left: 14px; right: 14px; bottom: 4px; height: 2px;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      border-radius: 999px;
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.25s ease;
+    }
+    .nav-links a:hover { color: var(--cream); background: rgba(255,255,255,0.05); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-links a.active { color: var(--blue-light); background: rgba(0,129,198,0.1); }
+    .nav-links a.active::after { transform: scaleX(1); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 82vh;
+      display: flex; align-items: center;
+      padding: 52px 36px 44px;
+      position: relative;
+      overflow: hidden;
+    }
+    /* mouse spotlight */
+    .hero::before {
+      content: ""; position: absolute; inset: -20%;
+      background: radial-gradient(circle 420px at var(--mx, 30%) var(--my, 30%), rgba(0,129,198,0.12), transparent 70%);
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .hero-inner {
+      max-width: 1380px; margin: 0 auto; width: 100%;
+      display: grid; grid-template-columns: 410px 1fr;
+      gap: 52px; align-items: center;
+      position: relative;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,129,198,0.12);
+      border: 1px solid rgba(0,129,198,0.3);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--blue-light); margin-bottom: 20px;
+    }
+    .hero-eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+    .hero-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 3.4vw, 4.2rem);
+      font-weight: 900; line-height: 1.0;
+      letter-spacing: -0.03em;
+      color: var(--cream);
+      margin-bottom: 16px;
+    }
+    .hero-headline em {
+      font-style: italic;
+      background: linear-gradient(135deg, var(--blue-light), var(--green-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub { font-size: 15px; color: var(--muted); line-height: 1.75; margin-bottom: 28px; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
+    .hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .hero-stat {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; padding: 12px 14px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .hero-stat:hover { border-color: rgba(0,129,198,0.35); transform: translateY(-2px); }
+    .hero-stat-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem; font-weight: 900; line-height: 1;
+      background: linear-gradient(135deg, var(--blue-light), var(--green-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 4px;
+    }
+    .hero-stat-label { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+    /* App preview — 3D tilt wrapper */
+    .tilt-wrap { perspective: 1200px; }
+    .hero-app-preview {
+      background: var(--navy2);
+      border: 1px solid rgba(0,129,198,0.25);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow), var(--glow-blue);
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform 0.15s ease-out, box-shadow 0.3s;
+      will-change: transform;
+    }
+    .app-preview-bar {
+      background: rgba(0,0,0,0.3);
+      padding: 10px 16px;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .app-preview-dots { display: flex; gap: 5px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; }
+    .dot-red { background: #ff5f57; } .dot-yellow { background: #febc2e; } .dot-green { background: #28c840; }
+    .app-preview-url { flex: 1; background: rgba(255,255,255,0.06); border-radius: 4px; padding: 4px 10px; font-size: 11px; color: var(--muted); }
+    .app-preview-inner { display: grid; grid-template-columns: 1fr 1fr; }
+    .app-config-panel { padding: 18px 20px; border-right: 1px solid rgba(255,255,255,0.07); }
+    .app-step-label { font-family: 'Special Elite', monospace; font-size: 9px; color: var(--blue-light); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+    .app-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--cream); margin-bottom: 14px; }
+    .app-title span { color: var(--blue-light); }
+    .app-field { margin-bottom: 11px; }
+    .app-field-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+    .app-field-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(0,129,198,0.22); border-radius: 6px; padding: 7px 10px; font-size: 12px; color: var(--cream); width: 100%; }
+    .app-pills { display: flex; gap: 5px; flex-wrap: wrap; }
+    .app-pill { padding: 5px 9px; border-radius: 4px; font-size: 10px; font-weight: 600; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: var(--muted); }
+    .app-pill.active { background: rgba(0,129,198,0.2); border-color: var(--blue); color: var(--blue-light); }
+    .app-preview-panel { padding: 18px 20px; }
+    .live-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); margin-bottom: 12px; }
+    .live-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    .preview-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(0,129,198,0.18); border-radius: 9px; padding: 13px; margin-bottom: 10px; }
+    .case-label { font-family: 'Special Elite', monospace; font-size: 8px; color: var(--blue-light); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 6px; }
+    .case-title { font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700; color: var(--cream); line-height: 1.2; margin-bottom: 5px; }
+    .case-sub { font-size: 10px; color: var(--muted); line-height: 1.5; font-style: italic; min-height: 45px; }
+    .type-caret { display: inline-block; width: 1px; height: 11px; background: var(--blue-light); vertical-align: -1px; animation: caretBlink 0.85s steps(1) infinite; }
+    @keyframes caretBlink { 50% { opacity: 0; } }
+    .cast-row { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+    .cast-chip { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; padding: 5px 8px; font-size: 9px; color: var(--cream2); line-height: 1.3; }
+    .cast-chip strong { display: block; font-weight: 700; }
+    .materials-strip { display: flex; gap: 6px; flex-wrap: wrap; }
+    .material-chip { background: rgba(73,169,66,0.1); border: 1px solid rgba(73,169,66,0.25); border-radius: 4px; padding: 5px 8px; font-size: 9px; color: var(--green-light); font-weight: 600; }
+
+    /* ── SHARED ── */
+    .section-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue-light); margin-bottom: 10px; }
+    .section-headline { font-family: 'Playfair Display', serif; font-size: clamp(1.7rem, 2.3vw, 2.4rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; color: var(--cream); margin-bottom: 12px; }
+    .section-headline em { font-style: italic; color: var(--blue-light); }
+    .section-body { font-size: 14px; color: var(--muted); line-height: 1.8; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--blue); color: #fff;
+      padding: 12px 22px; border-radius: 9px;
+      font-size: 14px; font-weight: 600; text-decoration: none;
+      transition: all 0.2s; border: none; cursor: pointer;
+      box-shadow: var(--glow-blue);
+    }
+    .btn-primary:hover { background: var(--blue-light); transform: translateY(-1px); box-shadow: 0 0 40px rgba(0,129,198,0.4); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.05); color: var(--cream);
+      padding: 12px 22px; border-radius: 9px;
+      font-size: 14px; font-weight: 500; text-decoration: none;
+      transition: all 0.2s; border: 1px solid rgba(255,255,255,0.12);
+      cursor: pointer;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
+
+    /* ── WHAT IS IT ── */
+    .what-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 52px; align-items: start; }
+    .what-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .what-card {
+      background: var(--navy2);
+      border: 1px solid rgba(0,129,198,0.15);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      display: flex; gap: 14px; align-items: flex-start;
+      transition: all 0.3s; cursor: default;
+    }
+    .what-card:hover { border-color: rgba(0,129,198,0.4); background: var(--navy3); transform: translateY(-3px); box-shadow: var(--glow-blue); }
+    .what-icon { width: 38px; height: 38px; border-radius: 9px; flex-shrink: 0; display: grid; place-items: center; font-size: 18px; }
+    .what-icon-blue { background: rgba(0,129,198,0.15); } .what-icon-green { background: rgba(73,169,66,0.15); } .what-icon-lime { background: rgba(176,188,34,0.15); }
+    .what-card-title { font-size: 13px; font-weight: 700; color: var(--cream); margin-bottom: 4px; }
+    .what-card-body { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    /* ── HOW IT WORKS — auto-advancing tabs ── */
+    .how-section { background: var(--navy2); }
+    .how-inner { display: grid; grid-template-columns: 290px 1fr; gap: 40px; align-items: start; }
+    .how-tabs { display: flex; flex-direction: column; gap: 3px; }
+    .how-tab {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 15px; border-radius: var(--radius);
+      cursor: pointer; border: 1px solid transparent;
+      transition: all 0.25s;
+      background: transparent;
+      text-align: left; width: 100%;
+      position: relative; overflow: hidden;
+    }
+    .how-tab:hover { background: rgba(255,255,255,0.04); }
+    .how-tab.active { background: rgba(0,129,198,0.1); border-color: rgba(0,129,198,0.3); }
+    .how-tab-progress {
+      position: absolute; left: 0; bottom: 0; height: 2px; width: 0%;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      border-radius: 999px;
+    }
+    .how-tab.active .how-tab-progress { animation: tabProgress var(--tab-duration, 7s) linear forwards; }
+    .how-tabs.paused .how-tab.active .how-tab-progress { animation-play-state: paused; }
+    @keyframes tabProgress { from { width: 0%; } to { width: 100%; } }
+    .how-tab-num {
+      width: 26px; height: 26px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 11px; font-weight: 700;
+      background: rgba(255,255,255,0.06);
+      color: var(--muted); flex-shrink: 0;
+      transition: all 0.25s;
+    }
+    .how-tab.active .how-tab-num { background: var(--blue); color: #fff; }
+    .how-tab-title { font-size: 13px; font-weight: 600; color: var(--cream); }
+    .how-tab-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .how-connector { width: 2px; height: 18px; background: linear-gradient(to bottom, rgba(0,129,198,0.2), transparent); margin: 1px 0 1px 27px; }
+    .how-hint { font-size: 11px; color: rgba(138,164,190,0.55); margin-top: 14px; padding-left: 4px; }
+    .how-panel {
+      display: none;
+      background: var(--navy3);
+      border: 1px solid rgba(0,129,198,0.18);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      animation: panelIn 0.35s ease;
+    }
+    .how-panel.active { display: block; }
+    @keyframes panelIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+    .how-panel-header { background: rgba(0,0,0,0.22); padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; gap: 16px; align-items: center; }
+    .how-panel-icon { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
+    .how-panel-label { font-family: 'Special Elite', monospace; font-size: 9px; color: var(--blue-light); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+    .how-panel-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--cream); }
+    .how-panel-body { padding: 22px 24px; }
+    .how-panel-desc { font-size: 13px; color: var(--muted); line-height: 1.8; margin-bottom: 20px; }
+    .how-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .how-detail { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 9px; padding: 12px 14px; }
+    .how-detail-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue-light); margin-bottom: 5px; }
+    .how-detail-val { font-size: 12px; color: var(--cream2); line-height: 1.5; }
+
+    /* ── AUDIENCE + OUTPUTS ── */
+    .audience-outputs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .col-header { margin-bottom: 22px; }
+    .for-whom-stack { display: flex; flex-direction: column; gap: 12px; }
+    .for-card {
+      background: var(--navy2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      display: flex; gap: 14px; align-items: flex-start;
+      transition: all 0.3s; cursor: default;
+    }
+    .for-card:hover { border-color: var(--blue); box-shadow: var(--glow-blue); transform: translateX(3px); }
+    .for-card-emoji { font-size: 24px; flex-shrink: 0; width: 42px; height: 42px; display: grid; place-items: center; background: rgba(255,255,255,0.04); border-radius: 9px; }
+    .for-card-title { font-size: 14px; font-weight: 700; color: var(--cream); margin-bottom: 4px; }
+    .for-card-body { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .outputs-stack { display: flex; flex-direction: column; gap: 12px; }
+    .flip-card { height: 82px; perspective: 900px; cursor: pointer; }
+    .flip-card-inner {
+      position: relative; width: 100%; height: 100%;
+      transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-card:hover .flip-card-inner, .flip-card.flipped .flip-card-inner { transform: rotateX(180deg); }
+    .flip-front, .flip-back {
+      position: absolute; inset: 0;
+      -webkit-backface-visibility: hidden; backface-visibility: hidden;
+      border-radius: var(--radius-lg); padding: 0 20px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .flip-front { background: var(--navy3); border: 1px solid rgba(0,129,198,0.2); }
+    .flip-back {
+      background: linear-gradient(135deg, var(--navy4), rgba(0,129,198,0.18));
+      border: 1px solid rgba(0,129,198,0.4);
+      transform: rotateX(180deg);
+      padding: 12px 18px; gap: 8px; flex-wrap: wrap; align-content: center;
+    }
+    .flip-icon { font-size: 24px; flex-shrink: 0; }
+    .flip-front-text { flex: 1; }
+    .flip-front-title { font-size: 14px; font-weight: 700; color: var(--cream); }
+    .flip-front-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .flip-hint { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(0,129,198,0.45); flex-shrink: 0; }
+    .flip-back-title { font-size: 11px; font-weight: 700; color: var(--blue-light); width: 100%; margin-bottom: 6px; }
+    .flip-back-items { display: flex; flex-wrap: wrap; gap: 5px; width: 100%; }
+    .flip-back-item { font-size: 10px; color: var(--cream2); background: rgba(255,255,255,0.08); border-radius: 4px; padding: 3px 7px; }
+
+    /* ── TRY IT + VIDEO ── */
+    .demo-video-row { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .theme-picker { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+    .theme-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--navy2);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px; padding: 8px 14px;
+      font-size: 12px; font-weight: 500; color: var(--muted);
+      cursor: pointer; transition: all 0.22s;
+    }
+    .theme-btn:hover { border-color: rgba(0,129,198,0.4); color: var(--cream); transform: translateY(-1px); }
+    .theme-btn.active { background: rgba(0,129,198,0.12); border-color: var(--blue); color: var(--blue-light); }
+
+    .names-row { display: flex; gap: 8px; margin-bottom: 14px; }
+    .names-input {
+      flex: 1;
+      background: var(--navy2);
+      border: 1px solid rgba(0,129,198,0.25);
+      border-radius: 9px;
+      padding: 10px 14px;
+      font-size: 13px; color: var(--cream);
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .names-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,129,198,0.15); }
+    .names-input::placeholder { color: rgba(138,164,190,0.5); }
+    .shuffle-btn {
+      background: rgba(73,169,66,0.12);
+      border: 1px solid rgba(73,169,66,0.35);
+      border-radius: 9px;
+      padding: 10px 16px;
+      font-size: 13px; font-weight: 600; color: var(--green-light);
+      cursor: pointer; transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .shuffle-btn:hover { background: rgba(73,169,66,0.2); transform: translateY(-1px); }
+    .shuffle-btn:active { transform: scale(0.97); }
+
+    .demo-preview { background: var(--navy2); border: 1px solid rgba(0,129,198,0.2); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-sm); }
+    .demo-preview-bar { background: rgba(0,0,0,0.3); padding: 9px 14px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .demo-preview-content { display: grid; grid-template-columns: 1fr 1fr; }
+    .demo-left { padding: 18px 20px; border-right: 1px solid rgba(255,255,255,0.06); }
+    .demo-right { padding: 18px 20px; }
+    .demo-case-num { font-family: 'Special Elite', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+    .demo-case-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: var(--cream); line-height: 1.2; margin-bottom: 6px; }
+    .demo-case-hook { font-size: 11px; color: var(--muted); font-style: italic; line-height: 1.55; margin-bottom: 14px; }
+    .demo-cast-label { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue-light); margin-bottom: 8px; }
+    .demo-cast { display: flex; flex-direction: column; gap: 5px; max-height: 240px; overflow-y: auto; }
+    .demo-cast::-webkit-scrollbar { width: 4px; }
+    .demo-cast::-webkit-scrollbar-thumb { background: rgba(0,129,198,0.3); border-radius: 999px; }
+    .demo-cast-item {
+      display: flex; gap: 8px; align-items: center;
+      background: rgba(255,255,255,0.04);
+      border-radius: 6px; padding: 5px 8px;
+      font-size: 10px;
+      animation: castIn 0.3s ease backwards;
+    }
+    @keyframes castIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+    .demo-cast-avatar {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--green));
+      display: grid; place-items: center;
+      font-size: 8px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .demo-cast-name { font-weight: 600; color: var(--cream); }
+    .demo-cast-role { color: var(--muted); }
+    .demo-right-label { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green-light); margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+    .demo-materials { display: flex; flex-direction: column; gap: 7px; }
+    .demo-material { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 10px 12px; }
+    .demo-material-name { font-size: 11px; font-weight: 600; color: var(--cream); margin-bottom: 2px; }
+    .demo-material-detail { font-size: 10px; color: var(--muted); }
+    .demo-material-bar { height: 2px; background: rgba(255,255,255,0.07); border-radius: 999px; margin-top: 7px; overflow: hidden; }
+    .demo-material-fill { height: 100%; width: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--blue), var(--green)); transform-origin: left; animation: fillIn 0.8s ease; }
+    @keyframes fillIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    .demo-summary-box { margin-top: 12px; padding: 10px 12px; background: rgba(73,169,66,0.08); border: 1px solid rgba(73,169,66,0.2); border-radius: 8px; }
+    .demo-summary-box-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green-light); margin-bottom: 4px; }
+    .demo-summary-box-val { font-size: 11px; color: var(--muted); line-height: 1.5; }
+    .demo-footnote { font-size: 11px; color: rgba(138,164,190,0.55); margin-top: 12px; line-height: 1.6; }
+
+    /* Video */
+    .video-wrap {
+      position: relative;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow), var(--glow-blue);
+      border: 1px solid rgba(0,129,198,0.25);
+      background: #000;
+    }
+    .video-wrap video { display: block; width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+    .video-overlay {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(13,27,46,0.45);
+      cursor: pointer; z-index: 5;
+      transition: opacity 0.35s, visibility 0.35s;
+    }
+    .video-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .play-btn {
+      width: 76px; height: 76px; border-radius: 50%;
+      background: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 0 14px rgba(0,129,198,0.16), var(--glow-blue);
+      transition: transform 0.2s, background 0.2s;
+      border: none; cursor: pointer;
+    }
+    .video-overlay:hover .play-btn { transform: scale(1.08); background: var(--blue-light); }
+    .play-btn svg { margin-left: 4px; }
+    .fullscreen-btn {
+      position: absolute; top: 12px; right: 12px; z-index: 10;
+      width: 34px; height: 34px;
+      background: rgba(0,0,0,0.65);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: #fff; font-size: 14px;
+      transition: all 0.2s;
+    }
+    .fullscreen-btn:hover { background: rgba(0,129,198,0.5); }
+    .video-caption { font-size: 11px; color: rgba(138,164,190,0.5); text-align: center; margin-top: 10px; }
+    .video-missing {
+      position: absolute; inset: 0; z-index: 4;
+      display: none; align-items: center; justify-content: center; flex-direction: column; gap: 8px;
+      background: var(--navy2); text-align: center; padding: 24px;
+    }
+    .video-missing.show { display: flex; }
+    .video-missing-title { font-size: 14px; font-weight: 700; color: var(--cream); }
+    .video-missing-sub { font-size: 12px; color: var(--muted); max-width: 320px; line-height: 1.6; }
+    .video-missing code { background: rgba(0,129,198,0.15); border-radius: 4px; padding: 2px 6px; font-size: 11px; color: var(--blue-light); }
+
+    /* ── FAQ ── */
+    .faq-section { background: var(--navy2); }
+    .faq-grid { display: grid; grid-template-columns: 380px 1fr; gap: 48px; align-items: start; }
+    .faq-list { display: flex; flex-direction: column; gap: 10px; }
+    .faq-item {
+      background: var(--navy3);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: border-color 0.25s;
+    }
+    .faq-item.open { border-color: rgba(0,129,198,0.35); }
+    .faq-q {
+      width: 100%; background: transparent; border: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 16px 20px;
+      font-size: 14px; font-weight: 600; color: var(--cream);
+      cursor: pointer; text-align: left;
+      transition: color 0.2s;
+    }
+    .faq-q:hover { color: var(--blue-light); }
+    .faq-toggle {
+      width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(0,129,198,0.12);
+      display: grid; place-items: center;
+      color: var(--blue-light); font-size: 14px; font-weight: 400;
+      transition: transform 0.3s ease, background 0.3s;
+    }
+    .faq-item.open .faq-toggle { transform: rotate(45deg); background: rgba(73,169,66,0.18); color: var(--green-light); }
+    .faq-a {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.35s ease;
+    }
+    .faq-a-inner { padding: 0 20px 18px; font-size: 13px; color: var(--muted); line-height: 1.75; }
+
+    /* ── CONTACT ── */
+    .cta-section { padding-bottom: 80px; }
+    .cta-card {
+      background: linear-gradient(135deg, var(--navy3), rgba(0,129,198,0.1));
+      border: 1px solid rgba(0,129,198,0.25);
+      border-radius: var(--radius-xl);
+      padding: 52px 48px;
+      max-width: 800px; margin: 0 auto; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .cta-card::before {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(circle 300px at 50% 0%, rgba(0,129,198,0.12), transparent 70%);
+      pointer-events: none;
+    }
+    .cta-card > * { position: relative; }
+    .cta-card .section-body { margin: 0 auto 28px; text-align: center; max-width: 540px; }
+    .team-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 32px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.07); }
+    .team-chip {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px; padding: 7px 14px;
+      font-size: 12px; color: var(--cream2);
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .team-chip:hover { border-color: rgba(0,129,198,0.4); transform: translateY(-2px); }
+    .team-avatar { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 9px; font-weight: 700; color: #fff; }
+    .av-1 { background: var(--blue); } .av-2 { background: var(--green); } .av-3 { background: #8c920e; }
+    .av-4 { background: #1f7a99; } .av-5 { background: #3d8a4f; }
+
+    /* ── FOOTER ── */
+    footer { background: rgba(0,0,0,0.35); border-top: 1px solid rgba(255,255,255,0.06); padding: 20px 36px; }
+    .footer-inner { max-width: 1380px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .footer-logo img { height: 30px; width: auto; display: block; opacity: 0.85; }
+    .footer-note { font-size: 11px; color: rgba(138,164,190,0.45); }
+    .lcs-badge { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── REDUCED MOTION ── */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .hero::before { display: none; }
+      .hero-app-preview { transition: none !important; transform: none !important; }
+      .how-tab.active .how-tab-progress { animation: none; width: 100%; }
+      .demo-cast-item, .demo-material-fill { animation: none; }
+      .type-caret { animation: none; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+      .hero-inner { grid-template-columns: 360px 1fr; gap: 36px; }
+      .audience-outputs-row, .demo-video-row, .faq-grid { grid-template-columns: 1fr; gap: 40px; }
+    }
+    @media (max-width: 860px) {
+      .hero-inner, .what-grid, .how-inner { grid-template-columns: 1fr; }
+      .what-cards { grid-template-columns: 1fr 1fr; }
+      .hero { min-height: auto; padding: 48px 24px 36px; }
+      nav .nav-links { display: none; }
+      .container { padding: 0 20px; }
+      nav { padding: 0 20px; }
+      .names-row { flex-direction: column; }
+    }
+    @media (max-width: 560px) {
+      .what-cards { grid-template-columns: 1fr; }
+      .demo-preview-content { grid-template-columns: 1fr; }
+      .demo-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+      .cta-card { padding: 36px 22px; }
+      .nav-logo img { height: 38px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="scroll-progress"></div>
+  <div class="bg-ambient"></div>
+  <div class="bg-grid"></div>
+
+  <div class="site-wrap">
+
+    <!-- NAV -->
+    <nav>
+      <div class="nav-inner">
+        <a href="#top" class="nav-logo" aria-label="Resident Detective — back to top">
+          <img src="assets/logo.png" alt="Resident Detective" />
+        </a>
+        <ul class="nav-links">
+          <li><a href="#what" data-section="what">What It Is</a></li>
+          <li><a href="#how" data-section="how">How It Works</a></li>
+          <li><a href="#audience" data-section="audience">Who It's For</a></li>
+          <li><a href="#demo" data-section="demo">Try It</a></li>
+          <li><a href="#faq" data-section="faq">FAQ</a></li>
+          <li><a href="#contact" data-section="contact">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="top">
+      <div class="hero-inner">
+        <div class="reveal">
+          <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span>An LCS Collaboration Technology Project</div>
+          <h1 class="hero-headline">The mystery that<br/><em>writes itself.</em></h1>
+          <p class="hero-sub">Resident Detective is an AI-powered tool that creates custom, printable mystery and roleplay sessions for senior living communities. Staff describe the session they want — the tool writes the story, the characters, and the script. Residents play on paper. No screens required.</p>
+          <div class="hero-actions">
+            <a href="#how" class="btn-primary">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 10.5h-1.5v-5h1.5v5zm0-6.5h-1.5V3.5h1.5V5z"/></svg>
+              How It Works
+            </a>
+            <a href="#demo" class="btn-ghost">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M2 3h12v2H2zm0 4h12v2H2zm0 4h8v2H2z"/></svg>
+              Try the Preview
+            </a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat"><div class="hero-stat-val"><span class="countup" data-target="8" data-prefix="&lt;" data-suffix=" min">&lt;8 min</span></div><div class="hero-stat-label">Open app to printed packet in hand</div></div>
+            <div class="hero-stat"><div class="hero-stat-val"><span class="countup" data-target="119">119</span></div><div class="hero-stat-label">LCS communities at full rollout</div></div>
+            <div class="hero-stat"><div class="hero-stat-val"><span class="countup" data-target="5" data-suffix=" yrs">5 yrs</span></div><div class="hero-stat-label">Cognitive activity may delay Alzheimer's onset</div></div>
+            <div class="hero-stat"><div class="hero-stat-val">$0</div><div class="hero-stat-label">Technology required for residents</div></div>
+          </div>
+        </div>
+
+        <!-- App Preview with 3D tilt -->
+        <div class="tilt-wrap reveal">
+          <div class="hero-app-preview" id="tilt-card">
+            <div class="app-preview-bar">
+              <div class="app-preview-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div>
+              <div class="app-preview-url">residentdetective.lcsliving.com — Lifestyle Director Console</div>
+            </div>
+            <div class="app-preview-inner">
+              <div class="app-config-panel">
+                <div class="app-step-label">Step 02 of 05 · Configure Session</div>
+                <div class="app-title">Build Your <span>Mystery</span></div>
+                <div class="app-field">
+                  <div class="app-field-label">Theme &amp; Setting</div>
+                  <div class="app-field-input">1920s Speakeasy — The Cat's Pajamas</div>
+                </div>
+                <div class="app-field">
+                  <div class="app-field-label">Session Duration</div>
+                  <div class="app-pills"><span class="app-pill">30 min</span><span class="app-pill">45 min</span><span class="app-pill active">60 min</span><span class="app-pill">90 min</span></div>
+                </div>
+                <div class="app-field">
+                  <div class="app-field-label">Cognitive Level</div>
+                  <div class="app-pills"><span class="app-pill">Light</span><span class="app-pill active">Standard</span><span class="app-pill">Challenging</span></div>
+                </div>
+                <div class="app-field">
+                  <div class="app-field-label">Roleplay Intensity</div>
+                  <div class="app-pills"><span class="app-pill active">Conversation</span><span class="app-pill">Light Role</span><span class="app-pill">Full Character</span></div>
+                </div>
+              </div>
+              <div class="app-preview-panel">
+                <div class="live-badge"><span class="live-dot"></span> Live Preview</div>
+                <div class="preview-card">
+                  <div class="case-label">Case File · Case #0428 · Era: 1925</div>
+                  <div class="case-title">A Whisper at The Sapphire Lounge</div>
+                  <div class="case-sub"><span id="hero-typewriter"></span><span class="type-caret" id="hero-caret"></span></div>
+                </div>
+                <div class="cast-row">
+                  <div class="cast-chip"><strong>EL</strong>Torch Singer</div>
+                  <div class="cast-chip"><strong>FR</strong>The Detective</div>
+                  <div class="cast-chip"><strong>RU</strong>Bartender</div>
+                  <div class="cast-chip"><strong>DO</strong>The Reporter</div>
+                  <div class="cast-chip"><strong>WA</strong>Club Owner</div>
+                </div>
+                <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue-light);margin-bottom:7px;">Materials Ready to Print</div>
+                <div class="materials-strip">
+                  <div class="material-chip">📄 5 Character Sheets</div>
+                  <div class="material-chip">📋 Facilitator Guide</div>
+                  <div class="material-chip">🃏 Clue Cards</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider"/>
+
+    <!-- WHAT IS IT -->
+    <section id="what">
+      <div class="container">
+        <div class="what-grid">
+          <div class="reveal">
+            <div class="section-eyebrow">What It Is</div>
+            <h2 class="section-headline">A session generator<br/><em>built for activity teams.</em></h2>
+            <p class="section-body">
+              Resident Detective is a web tool for senior living staff. You enter a theme, the names of the residents who will play, and how long the session should run. The tool's AI then writes a complete, original mystery experience around that exact group — and formats everything as printable documents.
+              <br/><br/>
+              The entire activity runs on paper and conversation. Residents never touch a screen, download an app, or create an account.
+            </p>
+          </div>
+          <div class="what-cards reveal">
+            <div class="what-card">
+              <div class="what-icon what-icon-blue">🧠</div>
+              <div><div class="what-card-title">Cognitive Engagement</div><div class="what-card-body">Sessions are built around deduction, memory recall, and storytelling — structured thinking wrapped in a low-pressure game.</div></div>
+            </div>
+            <div class="what-card">
+              <div class="what-icon what-icon-green">👥</div>
+              <div><div class="what-card-title">Social Connection</div><div class="what-card-body">Each resident plays a named character. Solving the mystery requires trading clues and talking with each other.</div></div>
+            </div>
+            <div class="what-card">
+              <div class="what-icon what-icon-lime">⚡</div>
+              <div><div class="what-card-title">Minutes of Prep</div><div class="what-card-body">Writing a custom group activity by hand takes hours. The tool generates one in seconds and prints in minutes.</div></div>
+            </div>
+            <div class="what-card">
+              <div class="what-icon what-icon-blue">🖨️</div>
+              <div><div class="what-card-title">Print &amp; Play</div><div class="what-card-body">Character sheets, facilitator guide, and clue cards all print on standard paper. No tablets, logins, or devices for residents.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider"/>
+
+    <!-- HOW IT WORKS -->
+    <section id="how" class="how-section">
+      <div class="container">
+        <div style="margin-bottom:36px;" class="reveal">
+          <div class="section-eyebrow">How It Works</div>
+          <h2 class="section-headline">Four steps, start to finish.</h2>
+        </div>
+        <div class="how-inner reveal">
+          <div>
+            <div class="how-tabs" id="how-tabs">
+              <button class="how-tab active" data-step="1">
+                <div class="how-tab-num">1</div>
+                <div><div class="how-tab-title">Staff opens the app</div><div class="how-tab-sub">Browser-based, no install</div></div>
+                <div class="how-tab-progress"></div>
+              </button>
+              <div class="how-connector"></div>
+              <button class="how-tab" data-step="2">
+                <div class="how-tab-num">2</div>
+                <div><div class="how-tab-title">Configure the session</div><div class="how-tab-sub">Theme, residents, duration</div></div>
+                <div class="how-tab-progress"></div>
+              </button>
+              <div class="how-connector"></div>
+              <button class="how-tab" data-step="3">
+                <div class="how-tab-num">3</div>
+                <div><div class="how-tab-title">AI generates the packet</div><div class="how-tab-sub">Original story &amp; materials</div></div>
+                <div class="how-tab-progress"></div>
+              </button>
+              <div class="how-connector"></div>
+              <button class="how-tab" data-step="4">
+                <div class="how-tab-num">4</div>
+                <div><div class="how-tab-title">Print &amp; run the activity</div><div class="how-tab-sub">Staff facilitates, residents play</div></div>
+                <div class="how-tab-progress"></div>
+              </button>
+            </div>
+            <p class="how-hint">Steps advance automatically — or click any step to jump there.</p>
+          </div>
+          <div class="how-panels">
+            <div class="how-panel active" id="step-1">
+              <div class="how-panel-header">
+                <div class="how-panel-icon" style="background:rgba(0,129,198,0.15)">💻</div>
+                <div><div class="how-panel-label">Step 01 of 04</div><div class="how-panel-title">Staff Opens the App</div></div>
+              </div>
+              <div class="how-panel-body">
+                <p class="how-panel-desc">Any team member opens Resident Detective in a web browser — no installation, no game design background, no training course. The interface walks through setup in a short guided flow designed around a busy activity calendar.</p>
+                <div class="how-detail-grid">
+                  <div class="how-detail"><div class="how-detail-label">Access</div><div class="how-detail-val">Web browser, no install or download required</div></div>
+                  <div class="how-detail"><div class="how-detail-label">Who Uses It</div><div class="how-detail-val">Lifestyle Directors, Activity Coordinators, or any community staff member</div></div>
+                  <div class="how-detail"><div class="how-detail-label">Learning Curve</div><div class="how-detail-val">Guided UI — most staff are ready to generate on the first visit</div></div>
+                  <div class="how-detail"><div class="how-detail-label">Platform</div><div class="how-detail-val">Designed to run within LCS's existing Microsoft environment</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="how-panel" id="step-2">
+              <div class="how-panel-header">
+                <div class="how-panel-icon" style="background:rgba(176,188,34,0.12)">⚙️</div>
+                <div><div class="how-panel-label">Step 02 of 04</div><div class="how-panel-title">Configure the Session</div></div>
+              </div>
+              <div class="how-panel-body">
+                <p class="how-panel-desc">Staff choose a mystery theme, type in resident names, and pick a session length. Settings for cognitive level, mobility, and roleplay intensity shape what the AI writes — the same theme produces a very different session for a memory care group than for a puzzle club.</p>
+                <div class="how-detail-grid">
+                  <div class="how-detail"><div class="how-detail-label">Theme Options</div><div class="how-detail-val">Built-in genres, or describe a custom theme in plain text</div></div>
+                  <div class="how-detail"><div class="how-detail-label">Resident Names</div><div class="how-detail-val">Each resident gets a character written specifically for them</div></div>
+                  <div class="how-detail"><div class="how-detail-label">Adaptability</div><div class="how-detail-val">Cognitive level, mobility, group size, and time all shape the output</div></div>
+                  <div class="how-detail"><div class="how-detail-label">Time to Configure</div><div class="how-detail-val">Typically under 3 minutes to fill out every field</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="how-panel" id="step-3">
+              <div class="how-panel-header">
+                <div class="how-panel-icon" style="background:rgba(73,169,66,0.12)">✨</div>
+                <div><div class="how-panel-label">Step 03 of 04</div><div class="how-panel-title">AI Generates the Packet</div></div>
+              </div>
+              <div class="how-panel-body">
+                <p class="how-panel-desc">One click, and the AI writes a complete, never-before-seen mystery: an original title and storyline, a character sheet for every named resident, a scene-by-scene facilitator guide, and optional clue cards — all consistent with each other and tailored to the group's settings.</p>
+                <div class="how-detail-grid">
+                  <div class="how-detail"><div class="how-detail-label">Character Sheets</div><div class="how-detail-val">One per resident — name, backstory, clues they hold, secrets they keep</div></div>
+                  <div class="how-detail"><div class="how-detail-label">Facilitator Guide</div><div class="how-detail-val">Scene-by-scene script with discussion prompts and the full solution</div></div>
+                  <div class="how-detail"><div class="how-detail-label">Generation Time</div><div class="how-detail-val">Seconds — the full packet is ready to review immediately</div></div>
+                  <div class="how-detail"><div class="how-detail-label">Always Original</div><div class="how-detail-val">The same inputs never produce the same story twice</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="how-panel" id="step-4">
+              <div class="how-panel-header">
+                <div class="how-panel-icon" style="background:rgba(0,129,198,0.12)">🎭</div>
+                <div><div class="how-panel-label">Step 04 of 04</div><div class="how-panel-title">Print &amp; Run the Activity</div></div>
+              </div>
+              <div class="how-panel-body">
+                <p class="how-panel-desc">Staff print the packet and hand out character sheets. The facilitator guide carries the whole session — what to say, when to reveal each clue, and how to land the final reveal. Residents solve the mystery together through conversation, deduction, and the clues in their hands.</p>
+                <div class="how-detail-grid">
+                  <div class="how-detail"><div class="how-detail-label">Resident Tech Needed</div><div class="how-detail-val">None. Paper only — no iPads, logins, or screens</div></div>
+                  <div class="how-detail"><div class="how-detail-label">Session Length</div><div class="how-detail-val">30 to 90 minutes, matching what was configured</div></div>
+                  <div class="how-detail"><div class="how-detail-label">Facilitation</div><div class="how-detail-val">The guide is self-contained — staff can lead without rehearsal</div></div>
+                  <div class="how-detail"><div class="how-detail-label">Total Prep Time</div><div class="how-detail-val">Under 8 minutes from opening the app to packet in hand</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider"/>
+
+    <!-- WHO IT'S FOR + WHAT IT CREATES -->
+    <section id="audience">
+      <div class="container">
+        <div class="audience-outputs-row">
+          <div class="reveal">
+            <div class="col-header">
+              <div class="section-eyebrow">Who It's For</div>
+              <h2 class="section-headline">Built for the people<br/><em>on both sides of the table.</em></h2>
+            </div>
+            <div class="for-whom-stack">
+              <div class="for-card">
+                <div class="for-card-emoji">🎯</div>
+                <div><div class="for-card-title">Activity &amp; Lifestyle Directors</div><div class="for-card-body">The tool handles the writing and structure so staff time goes to facilitating, not preparing. Walk in with a printed packet; the guide carries the session.</div></div>
+              </div>
+              <div class="for-card">
+                <div class="for-card-emoji">👴</div>
+                <div><div class="for-card-title">Residents</div><div class="for-card-body">Every resident receives a character written for them by name. The experience is social and tactile — printed pages, conversation, and a mystery to untangle together.</div></div>
+              </div>
+              <div class="for-card">
+                <div class="for-card-emoji">🏢</div>
+                <div><div class="for-card-title">Community Leaders</div><div class="for-card-body">A new category of programming that supports cognitive and social wellbeing, runs on existing printers and browsers, and works the same way at every community.</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="reveal">
+            <div class="col-header">
+              <div class="section-eyebrow">What It Creates</div>
+              <h2 class="section-headline">Every session generates<br/><em>a complete packet.</em></h2>
+              <p style="font-size:12px;color:var(--muted);margin-top:4px;">Hover or tap each card to see what's inside.</p>
+            </div>
+            <div class="outputs-stack">
+              <div class="flip-card" tabindex="0" role="button" aria-label="Character Sheets — flip for details">
+                <div class="flip-card-inner">
+                  <div class="flip-front">
+                    <div class="flip-icon">📄</div>
+                    <div class="flip-front-text"><div class="flip-front-title">Character Sheets</div><div class="flip-front-sub">One per resident, written by name</div></div>
+                    <div class="flip-hint">↩ flip</div>
+                  </div>
+                  <div class="flip-back">
+                    <div class="flip-back-title">Character name · backstory · clues held · secrets kept · conversation starters</div>
+                    <div class="flip-back-items">
+                      <span class="flip-back-item">Written for each resident</span><span class="flip-back-item">Era-appropriate backstory</span><span class="flip-back-item">Cognitive-level language</span><span class="flip-back-item">Large print available</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flip-card" tabindex="0" role="button" aria-label="Facilitator Guide — flip for details">
+                <div class="flip-card-inner">
+                  <div class="flip-front">
+                    <div class="flip-icon">📋</div>
+                    <div class="flip-front-text"><div class="flip-front-title">Facilitator Guide</div><div class="flip-front-sub">The staff script, start to solution</div></div>
+                    <div class="flip-hint">↩ flip</div>
+                  </div>
+                  <div class="flip-back">
+                    <div class="flip-back-title">Scene flow · discussion prompts · clue timing · full solution · adaptation notes</div>
+                    <div class="flip-back-items">
+                      <span class="flip-back-item">Timed scene-by-scene</span><span class="flip-back-item">No rehearsal needed</span><span class="flip-back-item">Full mystery reveal</span><span class="flip-back-item">Group adaptation tips</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flip-card" tabindex="0" role="button" aria-label="Clue and Evidence Cards — flip for details">
+                <div class="flip-card-inner">
+                  <div class="flip-front">
+                    <div class="flip-icon">🃏</div>
+                    <div class="flip-front-text"><div class="flip-front-title">Clue &amp; Evidence Cards</div><div class="flip-front-sub">Physical props for the table</div></div>
+                    <div class="flip-hint">↩ flip</div>
+                  </div>
+                  <div class="flip-back">
+                    <div class="flip-back-title">Printable props · referenced in the story · passed between residents during play</div>
+                    <div class="flip-back-items">
+                      <span class="flip-back-item">Telegrams, monograms</span><span class="flip-back-item">Print &amp; cut — no design</span><span class="flip-back-item">Encourage light movement</span><span class="flip-back-item">Scale with group size</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider"/>
+
+    <!-- TRY IT + VIDEO -->
+    <section id="demo" style="background:rgba(0,0,0,0.15);">
+      <div class="container">
+        <div class="demo-video-row">
+          <!-- Interactive demo -->
+          <div class="reveal">
+            <div class="section-eyebrow">Try It</div>
+            <h2 class="section-headline" style="margin-bottom:6px;">Cast your own group.</h2>
+            <p class="section-body" style="margin-bottom:16px;">This is a small preview of how the real tool behaves. Pick a theme, type the first names of a group — watch the cast and materials rebuild around them. Hit shuffle for a different story in the same setting.</p>
+            <div class="theme-picker" id="theme-picker">
+              <button class="theme-btn active" data-theme="speakeasy">🍸 1920s Speakeasy</button>
+              <button class="theme-btn" data-theme="garden">🌸 Garden Party</button>
+              <button class="theme-btn" data-theme="cruise">🚢 Ocean Liner</button>
+              <button class="theme-btn" data-theme="space">🚀 Space Station</button>
+              <button class="theme-btn" data-theme="western">🤠 Old West Saloon</button>
+            </div>
+            <div class="names-row">
+              <input type="text" class="names-input" id="names-input"
+                     value="Eleanor, Frank, Dorothy, Walter, Ruth"
+                     placeholder="Type first names, separated by commas…"
+                     aria-label="Resident first names, separated by commas" />
+              <button class="shuffle-btn" id="shuffle-btn" title="Generate a different story in this theme">🎲 Shuffle story</button>
+            </div>
+            <div class="demo-preview">
+              <div class="demo-preview-bar">
+                <div class="app-preview-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div>
+                <div class="app-preview-url" style="font-size:10px;padding:3px 10px;">Resident Detective — Live Preview</div>
+                <div style="font-size:9px;color:var(--green-light);font-weight:700;display:flex;gap:4px;align-items:center;"><span style="width:5px;height:5px;border-radius:50%;background:var(--green-light);display:inline-block;"></span>Auto-assigned</div>
+              </div>
+              <div class="demo-preview-content">
+                <div class="demo-left" id="demo-left">
+                  <div class="demo-case-num" id="demo-case-num"></div>
+                  <div class="demo-case-title" id="demo-case-title"></div>
+                  <div class="demo-case-hook" id="demo-case-hook"></div>
+                  <div class="demo-cast-label">The Cast — Auto-Assigned</div>
+                  <div class="demo-cast" id="demo-cast"></div>
+                </div>
+                <div class="demo-right">
+                  <div class="demo-right-label"><span style="width:5px;height:5px;border-radius:50%;background:var(--green-light);display:inline-block;"></span>Materials Ready to Print</div>
+                  <div class="demo-materials" id="demo-materials"></div>
+                  <div class="demo-summary-box">
+                    <div class="demo-summary-box-label">Session Summary</div>
+                    <div class="demo-summary-box-val" id="demo-summary"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="demo-footnote">In the real tool, this step is followed by full AI generation — complete character backstories, a facilitator script, and print-ready PDFs, all written fresh for the group entered.</p>
+          </div>
+
+          <!-- Video -->
+          <div class="reveal" id="watch">
+            <div class="section-eyebrow">See It in Action</div>
+            <h2 class="section-headline" style="margin-bottom:6px;">Watch the overview.</h2>
+            <p class="section-body" style="margin-bottom:16px;">The full workflow in two minutes — from a staff member opening the app to residents mid-mystery.</p>
+            <div class="video-wrap" id="video-wrap">
+              <video id="rd-video" poster="assets/video-poster.jpg" preload="metadata" playsinline>
+                <source src="assets/resident-detective-overview.mp4" type="video/mp4" />
+              </video>
+              <div class="video-overlay" id="video-overlay" role="button" aria-label="Play overview video" tabindex="0">
+                <button class="play-btn" aria-hidden="true">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+              </div>
+              <div class="video-missing" id="video-missing">
+                <div class="video-missing-title">Video not found</div>
+                <div class="video-missing-sub">Place the overview video at <code>assets/resident-detective-overview.mp4</code> in this repository and refresh.</div>
+              </div>
+              <button class="fullscreen-btn" id="fullscreen-btn" title="Fullscreen">⛶</button>
+            </div>
+            <p class="video-caption">Click ⛶ or double-click the video for fullscreen</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider"/>
+
+    <!-- FAQ -->
+    <section id="faq" class="faq-section">
+      <div class="container">
+        <div class="faq-grid">
+          <div class="reveal">
+            <div class="section-eyebrow">Common Questions</div>
+            <h2 class="section-headline">The details people<br/><em>usually ask about.</em></h2>
+            <p class="section-body">Everything here reflects how the tool is being designed today. If your question isn't covered, the team is easy to reach — see the contact section below.</p>
+          </div>
+          <div class="faq-list reveal" id="faq-list">
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false">What do staff need in order to run a session?<span class="faq-toggle">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner">A web browser and a printer. The tool generates the full packet as printable documents; once printed, the session itself needs nothing but a table and the group. There's no equipment to set up in the activity room.</div></div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false">Do residents need any technology?<span class="faq-toggle">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner">No. Residents interact only with printed materials — their character sheet and any clue cards in play. There are no screens, accounts, passwords, or devices on the resident side, which removes the digital-literacy barrier that limits many technology-based engagement tools.</div></div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false">How does it adapt to different ability levels?<span class="faq-toggle">-</span></button>
+              <div class="faq-a"><div class="faq-a-inner">Cognitive level, mobility, and roleplay intensity are configuration settings, not afterthoughts. A "Light" cognitive setting produces shorter text, simpler clue chains, and more facilitator support; "Challenging" produces layered puzzles. Roleplay intensity ranges from pure conversation (no acting required) to full character play. Large-print output is available.</div></div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false">Does the AI reuse stories between groups?<span class="faq-toggle">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner">No — every packet is generated fresh. The same theme with the same settings will still produce a different title, plot, and cast of characters each time. There is no content library being recycled; the tool writes each session from the inputs staff provide.</div></div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false">What information about residents does it use?<span class="faq-toggle">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner">Only what staff type into the session form — typically first names and the group-level settings like cognitive level. The names are used to personalize character sheets. The tool is being designed to run within LCS's existing Microsoft cloud environment.</div></div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false">What if residents don't want to act or roleplay?<span class="faq-toggle">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner">The experience works through conversation and clues without requiring performance. The "Conversation" intensity setting builds sessions where residents simply talk through what their characters know — no voices, costumes, or acting. Many groups start there and dial up over time.</div></div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false">When will it be available?<span class="faq-toggle">+</span></button>
+              <div class="faq-a"><div class="faq-a-inner">Resident Detective is in active development by the LCS Collaboration Technology team, with a pilot at select communities planned as the next step. If you'd like updates or want your community considered for the pilot, contact the team below.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider"/>
+
+    <!-- CONTACT -->
+    <section id="contact" class="cta-section">
+      <div class="container">
+        <div class="cta-card reveal">
+          <div class="section-eyebrow" style="margin-bottom:10px;">LCS Collaboration Technology</div>
+          <h2 class="section-headline">Questions, ideas, or<br/><em>interest in the pilot?</em></h2>
+          <p class="section-body">Resident Detective is in active development, with a community pilot planned as the next phase. Whether you have a question about how it works, an idea to share, or want your community considered — the team would like to hear from you.</p>
+          <a href="mailto:CollaborationTechnology@lcsliving.com?subject=Resident%20Detective" class="btn-primary" style="font-size:15px;padding:14px 30px;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1 4a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H3a2 2 0 01-2-2V4zm2-.5a.5.5 0 00-.5.5v.4l5.5 3.44L13.5 4.4V4a.5.5 0 00-.5-.5H3zm10.5 2.27L8.4 9.08a.75.75 0 01-.8 0L2.5 5.77V12a.5.5 0 00.5.5h10a.5.5 0 00.5-.5V5.77z"/></svg>
+            Contact the Team
+          </a>
+          <div class="team-row">
+            <div class="team-chip"><div class="team-avatar av-1">ME</div>Matt Ervin</div>
+            <div class="team-chip"><div class="team-avatar av-2">GK</div>Gunnar Klyn</div>
+            <div class="team-chip"><div class="team-avatar av-3">JW</div>Jeff Wittstock</div>
+            <div class="team-chip"><div class="team-avatar av-4">BK</div>Brady Kohout</div>
+            <div class="team-chip"><div class="team-avatar av-5">JV</div>Jacob Vanden Berg</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-inner">
+        <a href="#top" class="footer-logo"><img src="assets/logo.png" alt="Resident Detective" /></a>
+        <div class="footer-note">An LCS Collaboration Technology project · InnoTank 2026 Top 5 Finalist</div>
+        <div class="lcs-badge">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect width="14" height="14" rx="3" fill="#0081C6"/><text x="7" y="10" text-anchor="middle" font-size="8" fill="white" font-weight="bold">L</text></svg>
+          Life Care Services
+        </div>
+      </div>
+    </footer>
+
+  </div><!-- /site-wrap -->
+
+  <script>
+  (function() {
+    'use strict';
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ════════ SCROLL PROGRESS ════════ */
+    const progressBar = document.getElementById('scroll-progress');
+    function updateProgress() {
+      const h = document.documentElement;
+      const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+      progressBar.style.width = pct + '%';
+    }
+    document.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+
+    /* ════════ SCROLLSPY ════════ */
+    const navLinks = document.querySelectorAll('.nav-links a[data-section]');
+    const sectionIds = ['what','how','audience','demo','faq','contact'];
+    const spy = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          navLinks.forEach(a => a.classList.toggle('active', a.dataset.section === e.target.id));
+        }
+      });
+    }, { rootMargin: '-30% 0px -55% 0px' });
+    sectionIds.forEach(id => { const el = document.getElementById(id); if (el) spy.observe(el); });
+
+    /* ════════ HERO SPOTLIGHT ════════ */
+    const hero = document.querySelector('.hero');
+    if (!reducedMotion && window.matchMedia('(hover: hover)').matches) {
+      hero.addEventListener('mousemove', (e) => {
+        const r = hero.getBoundingClientRect();
+        hero.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+        hero.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+      });
+    }
+
+    /* ════════ 3D TILT ON APP PREVIEW ════════ */
+    const tiltCard = document.getElementById('tilt-card');
+    if (!reducedMotion && window.matchMedia('(hover: hover)').matches && tiltCard) {
+      const wrap = tiltCard.parentElement;
+      wrap.addEventListener('mousemove', (e) => {
+        const r = wrap.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        tiltCard.style.transform = `rotateY(${px * 5}deg) rotateX(${-py * 5}deg)`;
+      });
+      wrap.addEventListener('mouseleave', () => {
+        tiltCard.style.transition = 'transform 0.5s ease';
+        tiltCard.style.transform = 'rotateY(0) rotateX(0)';
+        setTimeout(() => tiltCard.style.transition = 'transform 0.15s ease-out', 500);
+      });
+    }
+
+    /* ════════ HERO TYPEWRITER ════════ */
+    const heroHook = '"The bandleader is dead, the saxophone is missing, and one of the regulars knows more than they\u2019re letting on. Six suspects. One quiet evening. Who silenced the music?"';
+    const twEl = document.getElementById('hero-typewriter');
+    const caret = document.getElementById('hero-caret');
+    if (reducedMotion) {
+      twEl.textContent = heroHook;
+      caret.style.display = 'none';
+    } else {
+      let i = 0;
+      const typeObs = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          typeObs.disconnect();
+          const tick = () => {
+            if (i <= heroHook.length) {
+              twEl.textContent = heroHook.slice(0, i++);
+              setTimeout(tick, 16);
+            } else {
+              setTimeout(() => caret.style.display = 'none', 2500);
+            }
+          };
+          setTimeout(tick, 500);
+        }
+      }, { threshold: 0.4 });
+      typeObs.observe(twEl.closest('.preview-card'));
+    }
+
+    /* ════════ COUNT-UP STATS ════════ */
+    function animateCount(el) {
+      const target = parseFloat(el.dataset.target);
+      const prefix = el.dataset.prefix ? el.dataset.prefix.replace('&lt;','<') : '';
+      const suffix = el.dataset.suffix || '';
+      if (reducedMotion) { el.textContent = prefix + target + suffix; return; }
+      const dur = 1100;
+      const start = performance.now();
+      function frame(now) {
+        const t = Math.min((now - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = prefix + Math.round(target * eased) + suffix;
+        if (t < 1) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
+    const countObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { animateCount(e.target); countObs.unobserve(e.target); }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.countup').forEach(el => countObs.observe(el));
+
+    /* ════════ HOW IT WORKS — AUTO-ADVANCING TABS ════════ */
+    const TAB_SECONDS = 7;
+    const howTabs = Array.from(document.querySelectorAll('.how-tab'));
+    const howPanels = Array.from(document.querySelectorAll('.how-panel'));
+    const tabsWrap = document.getElementById('how-tabs');
+    tabsWrap.style.setProperty('--tab-duration', TAB_SECONDS + 's');
+    let currentStep = 1, autoTimer = null, autoEnabled = !reducedMotion;
+
+    function showStep(n, fromAuto) {
+      currentStep = n;
+      howTabs.forEach((t) => {
+        const active = parseInt(t.dataset.step) === n;
+        t.classList.remove('active');
+        // restart progress animation by forcing reflow
+        const bar = t.querySelector('.how-tab-progress');
+        bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = '';
+        if (active) t.classList.add('active');
+      });
+      howPanels.forEach((p, i) => p.classList.toggle('active', i === n - 1));
+      if (!fromAuto) stopAuto();   // manual click = user takes control
+      else restartAuto();
+    }
+    function stopAuto() { autoEnabled = false; clearTimeout(autoTimer); document.querySelectorAll('.how-tab-progress').forEach(b => b.style.display = 'none'); }
+    function restartAuto() {
+      clearTimeout(autoTimer);
+      if (!autoEnabled) return;
+      autoTimer = setTimeout(() => showStep(currentStep % 4 + 1, true), TAB_SECONDS * 1000);
+    }
+    howTabs.forEach(t => t.addEventListener('click', () => showStep(parseInt(t.dataset.step), false)));
+    // pause on hover
+    const howSection = document.getElementById('how');
+    howSection.addEventListener('mouseenter', () => { tabsWrap.classList.add('paused'); clearTimeout(autoTimer); });
+    howSection.addEventListener('mouseleave', () => { tabsWrap.classList.remove('paused'); restartAuto(); });
+    // start auto only when section is visible
+    const howObs = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && autoEnabled) { showStep(1, true); howObs.disconnect(); }
+    }, { threshold: 0.3 });
+    howObs.observe(howSection);
+    if (reducedMotion) stopAuto();
+
+    /* ════════ INTERACTIVE DEMO ════════ */
+    const themes = {
+      speakeasy: {
+        roles: ['The Torch Singer','The Off-Duty Detective','The Society Reporter','The Club Owner','The Bartender','The Piano Player','The Cigarette Girl','The Bootlegger','The Regular','The Doorman','The Card Dealer','The Out-of-Towner'],
+        stories: [
+          { num: 'Case #0428 · Era: 1925 · Runtime: 60 min', title: 'A Whisper at The Sapphire Lounge', hook: '"The bandleader is dead, the saxophone is missing, and one of the regulars knows more than they\u2019re letting on. One quiet evening. Who silenced the music?"' },
+          { num: 'Case #0431 · Era: 1927 · Runtime: 60 min', title: 'The Last Pour at Marlowe\u2019s', hook: '"Marlowe\u2019s finest bottle of champagne was meant for a celebration. Instead it sits unopened beside an empty chair — and everyone at the bar swears they saw nothing."' }
+        ],
+        clue: 'Matchbooks, monograms, telegrams'
+      },
+      garden: {
+        roles: ['The Head Gardener','The Estate Owner','The Visiting Botanist','The Jealous Neighbor','The Caterer','The Garden Club President','The New Member','The Groundskeeper','The Florist','The Society Columnist','The Niece','The Old Friend'],
+        stories: [
+          { num: 'Case #0519 · Era: 1955 · Runtime: 45 min', title: 'Petals & Poison at Lavender Hill', hook: '"The prize rose is dead, the gardening shears have vanished, and the annual garden party has turned into a scandal. Someone here is hiding a secret. Can you unearth it?"' },
+          { num: 'Case #0522 · Era: 1952 · Runtime: 45 min', title: 'The Empty Trophy Case', hook: '"For thirty years the Garden Club\u2019s silver cup sat in the gazebo. This morning it was gone — and the only footprints in the dew lead back to the party."' }
+        ],
+        clue: 'Soil samples, note cards, pressed flowers'
+      },
+      cruise: {
+        roles: ['The Captain\u2019s Wife','The Sommelier','The Socialite','The Ship\u2019s Doctor','The Stowaway\u2019s Sister','The First Officer','The Jazz Singer','The Retired Diplomat','The Card Sharp','The Honeymooner','The Purser','The Travel Writer'],
+        stories: [
+          { num: 'Case #0612 · Era: 1938 · Runtime: 60 min', title: 'Midnight on the Empress of the Seas', hook: '"Three days at sea, one missing diamond brooch, and a passenger list full of secrets. The storm has everyone trapped below deck — and so does the truth."' },
+          { num: 'Case #0615 · Era: 1936 · Runtime: 60 min', title: 'The Stateroom Seven Affair', hook: '"Stateroom Seven was supposed to be empty this crossing. So who has been dining at its table, signing its tab — and why did they vanish the night the fog rolled in?"' }
+        ],
+        clue: 'Telegrams, passenger manifest, key fob'
+      },
+      space: {
+        roles: ['Mission Commander','Chief Engineer','Station Medic','The Pilot','Science Officer','Communications Lead','The Botanist','The New Recruit','Cargo Specialist','The Veteran','Systems Analyst','The Visitor from Earth'],
+        stories: [
+          { num: 'Case #0701 · Era: 2157 · Runtime: 60 min', title: 'Who Deactivated ARIA?', hook: '"The station\u2019s AI has gone offline. Life support is on backup. Someone on this crew shut down ARIA — and they had a reason. One truth. Clock is ticking."' },
+          { num: 'Case #0704 · Era: 2161 · Runtime: 60 min', title: 'The Cargo Bay Manifest', hook: '"Crate 11 arrived sealed from Luna Station. Now it sits open and empty in the cargo bay, and every airlock log from last night has been wiped clean."' }
+        ],
+        clue: 'Access logs, circuit boards, encrypted messages'
+      },
+      western: {
+        roles: ['The Retired Lawman','The Saloon Singer','The Cattle Rancher','The Town Doctor','The Blacksmith','The Stagecoach Driver','The General Store Owner','The Card Player','The Preacher','The Newspaper Editor','The Ranch Hand','The Stranger in Town'],
+        stories: [
+          { num: 'Case #0822 · Era: 1882 · Runtime: 45 min', title: 'Last Round at the Dusty Boot Saloon', hook: '"The sheriff\u2019s badge is gone, the gold shipment never arrived, and the piano player stopped playing right before sunrise. Someone in Rattlesnake Creek knows why."' },
+          { num: 'Case #0825 · Era: 1885 · Runtime: 45 min', title: 'The Ghost of Coyote Ridge', hook: '"Folks say the old mine is haunted. But ghosts don\u2019t leave boot prints, and they surely don\u2019t need the deed that went missing from the bank this morning."' }
+        ],
+        clue: 'Wanted posters, telegram, gold nugget'
+      }
+    };
+
+    let currentTheme = 'speakeasy';
+    let storyIndex = 0;
+
+    const $ = id => document.getElementById(id);
+    function initials(name) {
+      const parts = name.trim().split(/\s+/);
+      return (parts.length > 1 ? parts[0][0] + parts[1][0] : name.trim().slice(0, 2)).toUpperCase();
+    }
+    function parseNames() {
+      return $('names-input').value.split(',').map(s => s.trim()).filter(Boolean).slice(0, 12);
+    }
+
+    function renderDemo(animate) {
+      const t = themes[currentTheme];
+      const story = t.stories[storyIndex % t.stories.length];
+      let names = parseNames();
+      if (names.length === 0) names = ['Eleanor', 'Frank', 'Dorothy'];
+      const n = names.length;
+
+      const left = $('demo-left');
+      const doRender = () => {
+        $('demo-case-num').textContent = story.num;
+        $('demo-case-title').textContent = story.title;
+        $('demo-case-hook').textContent = story.hook;
+
+        $('demo-cast').innerHTML = names.map((name, i) =>
+          `<div class="demo-cast-item" style="animation-delay:${i * 0.05}s"><div class="demo-cast-avatar">${initials(name)}</div><div><span class="demo-cast-name">${name.replace(/</g,'&lt;')}</span> · <span class="demo-cast-role">${t.roles[i % t.roles.length]}</span></div></div>`
+        ).join('');
+
+        const suspects = Math.max(2, Math.floor(n * 0.6));
+        $('demo-materials').innerHTML = `
+          <div class="demo-material"><div class="demo-material-name">📄 ${n} Character Sheet${n === 1 ? '' : 's'}</div><div class="demo-material-detail">${n * 2} pages · PDF · One per resident</div><div class="demo-material-bar"><div class="demo-material-fill"></div></div></div>
+          <div class="demo-material"><div class="demo-material-name">📋 Facilitator Guide &amp; Script</div><div class="demo-material-detail">${4 + Math.ceil(n / 2)} pages · Scene-by-scene with solution</div><div class="demo-material-bar"><div class="demo-material-fill"></div></div></div>
+          <div class="demo-material"><div class="demo-material-name">🃏 Clue &amp; Evidence Cards</div><div class="demo-material-detail">${n + 3} cards · ${t.clue}</div><div class="demo-material-bar"><div class="demo-material-fill"></div></div></div>`;
+
+        const runtime = story.num.match(/(\d+) min/)[1];
+        $('demo-summary').textContent = `${n} resident${n === 1 ? '' : 's'} · ${suspects} suspects · 1 narrator · ${runtime} min · Standard · Conversation intensity`;
+      };
+
+      if (animate && !reducedMotion) {
+        left.style.transition = 'opacity 0.13s ease, transform 0.13s ease';
+        left.style.opacity = '0'; left.style.transform = 'translateY(5px)';
+        setTimeout(() => {
+          doRender();
+          left.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+          left.style.opacity = '1'; left.style.transform = 'none';
+        }, 130);
+      } else {
+        doRender();
+      }
+    }
+
+    // theme buttons
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentTheme = btn.dataset.theme;
+        storyIndex = 0;
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b === btn));
+        renderDemo(true);
+      });
+    });
+    // shuffle
+    $('shuffle-btn').addEventListener('click', () => { storyIndex++; renderDemo(true); });
+    // names input — debounced live update
+    let nameTimer;
+    $('names-input').addEventListener('input', () => {
+      clearTimeout(nameTimer);
+      nameTimer = setTimeout(() => renderDemo(false), 350);
+    });
+    renderDemo(false);
+
+    /* ════════ VIDEO PLAYER ════════ */
+    const video = $('rd-video');
+    const overlay = $('video-overlay');
+    const missing = $('video-missing');
+    function playVideo() {
+      overlay.classList.add('hidden');
+      video.controls = true;
+      video.play().catch(() => {});
+    }
+    overlay.addEventListener('click', playVideo);
+    overlay.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); playVideo(); } });
+    video.addEventListener('pause', () => { if (!video.seeking && video.currentTime > 0 && !document.fullscreenElement) { /* keep controls */ } });
+    video.addEventListener('error', () => { missing.classList.add('show'); overlay.classList.add('hidden'); }, true);
+    video.querySelector('source').addEventListener('error', () => { missing.classList.add('show'); overlay.classList.add('hidden'); });
+    $('fullscreen-btn').addEventListener('click', () => {
+      const wrap = $('video-wrap');
+      if (document.fullscreenElement) document.exitFullscreen();
+      else if (wrap.requestFullscreen) wrap.requestFullscreen();
+      else if (wrap.webkitRequestFullscreen) wrap.webkitRequestFullscreen();
+    });
+    video.addEventListener('dblclick', () => $('fullscreen-btn').click());
+
+    /* ════════ FAQ ACCORDION ════════ */
+    document.querySelectorAll('.faq-item').forEach(item => {
+      const q = item.querySelector('.faq-q');
+      const a = item.querySelector('.faq-a');
+      q.querySelector('.faq-toggle').textContent = '+';
+      q.addEventListener('click', () => {
+        const open = item.classList.contains('open');
+        // close others
+        document.querySelectorAll('.faq-item.open').forEach(other => {
+          if (other !== item) {
+            other.classList.remove('open');
+            other.querySelector('.faq-a').style.maxHeight = '0px';
+            other.querySelector('.faq-q').setAttribute('aria-expanded', 'false');
+          }
+        });
+        item.classList.toggle('open', !open);
+        q.setAttribute('aria-expanded', String(!open));
+        a.style.maxHeight = open ? '0px' : a.scrollHeight + 'px';
+      });
+    });
+
+    /* ════════ FLIP CARDS — tap & keyboard ════════ */
+    document.querySelectorAll('.flip-card').forEach(card => {
+      card.addEventListener('click', () => card.classList.toggle('flipped'));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.classList.toggle('flipped'); }
+      });
+    });
+
+    /* ════════ SCROLL REVEAL ════════ */
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          e.target.querySelectorAll('.what-card, .for-card, .flip-card, .faq-item').forEach((child, i) => {
+            child.style.transitionDelay = (i * 0.06) + 's';
+          });
+          revealObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+  })();
+  </script>
+</body>
+</html>
