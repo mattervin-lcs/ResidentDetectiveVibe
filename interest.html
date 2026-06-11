@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join the Pilot — Resident Detective</title>
+  <meta name="description" content="Express interest in joining the Resident Detective community pilot. Tell us about your community and how you run activities." />
+  <link rel="icon" type="image/png" href="assets/logo-mark.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@300;400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:       #0D1B2E;
+      --navy2:      #112338;
+      --navy3:      #1A3050;
+      --navy4:      #243d5e;
+      --blue:       #0081C6;
+      --blue-light: #2fa0e0;
+      --green:      #49A942;
+      --green-light:#65c45e;
+      --lime:       #B0BC22;
+      --cream:      #F0F4F8;
+      --cream2:     #dce8f0;
+      --muted:      #8aa4be;
+      --text:       #e8f2fa;
+      --amber:      #d4960a;
+      --amber-light:#f5b731;
+      --radius: 12px; --radius-lg: 20px; --radius-xl: 28px;
+      --shadow: 0 16px 48px rgba(0,0,0,0.45);
+      --glow-blue: 0 0 32px rgba(0,129,198,0.22);
+      --glow-green: 0 0 32px rgba(73,169,66,0.22);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--navy); color: var(--text); overflow-x: hidden; line-height: 1.6; min-height: 100vh; }
+    button, input, textarea, select { font-family: inherit; }
+
+    /* ── AMBIENT BG ── */
+    .bg-ambient {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 50% at 10% 15%, rgba(0,129,198,0.1) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 90% 80%, rgba(73,169,66,0.09) 0%, transparent 50%),
+        radial-gradient(ellipse 40% 30% at 80% 5%, rgba(176,188,34,0.06) 0%, transparent 50%);
+    }
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: linear-gradient(rgba(0,129,198,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,129,198,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    /* ── SCROLL PROGRESS ── */
+    #scroll-progress {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: linear-gradient(90deg, var(--blue), var(--green), var(--lime));
+      z-index: 300; box-shadow: 0 0 12px rgba(0,129,198,0.6);
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(13,27,46,0.85);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      padding: 0 36px;
+    }
+    nav::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,129,198,0.45), rgba(73,169,66,0.35), transparent);
+    }
+    .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 24px; }
+    .nav-logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
+    .nav-logo img { height: 50px; width: auto; display: block; transition: transform 0.25s ease; }
+    .nav-logo:hover img { transform: scale(1.04); }
+    .nav-back {
+      display: flex; align-items: center; gap: 8px;
+      color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500;
+      padding: 7px 14px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.2s;
+    }
+    .nav-back:hover { color: var(--cream); border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.05); }
+
+    /* ── LAYOUT ── */
+    .page-wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 52px 36px 100px; }
+
+    /* ── HEADER ── */
+    .page-header { margin-bottom: 48px; display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: start; }
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(73,169,66,0.12); border: 1px solid rgba(73,169,66,0.35);
+      border-radius: 999px; padding: 6px 14px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--green-light); margin-bottom: 18px;
+    }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
+      font-weight: 900; line-height: 1.0;
+      letter-spacing: -0.03em; color: var(--cream);
+      margin-bottom: 16px;
+    }
+    .page-title em {
+      font-style: italic;
+      background: linear-gradient(135deg, var(--blue-light), var(--green-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .page-sub { font-size: 15px; color: var(--muted); line-height: 1.75; max-width: 580px; }
+
+    /* Case file decoration */
+    .case-file-stamp {
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.03);
+      border: 2px solid rgba(212,150,10,0.3);
+      border-radius: 12px;
+      padding: 18px 20px; text-align: center;
+      min-width: 180px;
+    }
+    .stamp-label { font-family: 'Special Elite', monospace; font-size: 9px; color: var(--amber-light); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 8px; }
+    .stamp-id { font-family: 'Special Elite', monospace; font-size: 22px; color: var(--amber-light); letter-spacing: 0.06em; }
+    .stamp-sub { font-size: 10px; color: rgba(245,183,49,0.5); margin-top: 6px; letter-spacing: 0.06em; }
+    .stamp-line { height: 1px; background: rgba(212,150,10,0.2); margin: 10px 0; }
+
+    /* ── FORM CARD ── */
+    .form-card {
+      background: var(--navy2);
+      border: 1px solid rgba(0,129,198,0.18);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    /* ── FORM SECTIONS ── */
+    .form-section {
+      padding: 32px 36px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .form-section:last-of-type { border-bottom: none; }
+    .form-section-header {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 28px;
+    }
+    .form-section-icon {
+      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+      display: grid; place-items: center; font-size: 20px;
+    }
+    .icon-blue { background: rgba(0,129,198,0.15); }
+    .icon-green { background: rgba(73,169,66,0.15); }
+    .icon-amber { background: rgba(212,150,10,0.15); }
+    .icon-lime { background: rgba(176,188,34,0.12); }
+    .form-section-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--cream); }
+    .form-section-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .required-note { font-size: 11px; color: rgba(138,164,190,0.55); margin-left: auto; }
+
+    /* ── IDENTITY ROW ── */
+    .identity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* ── FIELD ── */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field-label {
+      font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--blue-light);
+    }
+    .field-label .opt { font-weight: 400; color: rgba(138,164,190,0.55); text-transform: none; letter-spacing: 0; font-size: 11px; }
+    .field-input, .field-select, .field-textarea {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(0,129,198,0.2);
+      border-radius: 9px;
+      padding: 11px 14px;
+      font-size: 14px; color: var(--cream);
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      width: 100%;
+    }
+    .field-input::placeholder, .field-textarea::placeholder { color: rgba(138,164,190,0.45); }
+    .field-input:focus, .field-select:focus, .field-textarea:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(0,129,198,0.15);
+      background: rgba(0,129,198,0.06);
+    }
+    .field-select { appearance: none; -webkit-appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238aa4be' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+      padding-right: 36px;
+    }
+    .field-select option { background: var(--navy3); color: var(--cream); }
+    .field-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+    /* ── QUESTION GRIDS ── */
+    .q-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .q-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .q-full { grid-column: 1 / -1; }
+
+    /* ── QUESTION CARD ── */
+    .q-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 8px;
+      transition: border-color 0.25s, background 0.25s;
+    }
+    .q-card:focus-within {
+      border-color: rgba(0,129,198,0.35);
+      background: rgba(0,129,198,0.05);
+    }
+    .q-num {
+      font-family: 'Special Elite', monospace;
+      font-size: 9px; color: var(--blue-light); letter-spacing: 0.15em; text-transform: uppercase;
+    }
+    .q-text { font-size: 13px; font-weight: 600; color: var(--cream2); line-height: 1.4; }
+    .q-card .field-textarea { min-height: 72px; font-size: 13px; }
+
+    /* Rating scale */
+    .rating-scale { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+    .rating-option { display: none; }
+    .rating-label {
+      width: 36px; height: 36px; border-radius: 8px;
+      display: grid; place-items: center;
+      font-size: 13px; font-weight: 700; color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer; transition: all 0.18s;
+    }
+    .rating-option:checked + .rating-label {
+      background: var(--blue); border-color: var(--blue); color: #fff;
+      box-shadow: 0 0 12px rgba(0,129,198,0.4);
+    }
+    .rating-label:hover { border-color: rgba(0,129,198,0.5); color: var(--blue-light); }
+    .rating-ends { display: flex; justify-content: space-between; font-size: 10px; color: rgba(138,164,190,0.55); margin-top: 4px; }
+
+    /* Checkbox grid */
+    .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 2px; }
+    .check-item { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .check-item input[type="checkbox"] { display: none; }
+    .check-box {
+      width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0;
+      border: 1px solid rgba(0,129,198,0.3);
+      background: rgba(255,255,255,0.03);
+      display: grid; place-items: center;
+      transition: all 0.18s;
+    }
+    .check-box::after { content: "✓"; font-size: 11px; font-weight: 700; color: #fff; opacity: 0; transform: scale(0.5); transition: all 0.15s; }
+    .check-item input:checked + .check-box { background: var(--blue); border-color: var(--blue); }
+    .check-item input:checked + .check-box::after { opacity: 1; transform: scale(1); }
+    .check-label { font-size: 12px; color: var(--cream2); line-height: 1.3; }
+
+    /* ── SUBMIT SECTION ── */
+    .submit-section {
+      background: linear-gradient(135deg, rgba(0,129,198,0.08), rgba(73,169,66,0.06));
+      border-top: 1px solid rgba(0,129,198,0.2);
+      padding: 32px 36px;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      flex-wrap: wrap;
+    }
+    .submit-note { font-size: 13px; color: var(--muted); line-height: 1.6; max-width: 500px; }
+    .submit-note strong { color: var(--cream2); font-weight: 600; }
+    .btn-submit {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--blue), #006faa);
+      color: #fff; padding: 14px 32px; border-radius: 10px;
+      font-size: 15px; font-weight: 700; border: none; cursor: pointer;
+      transition: all 0.2s; white-space: nowrap;
+      box-shadow: 0 4px 24px rgba(0,129,198,0.35);
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,129,198,0.45); filter: brightness(1.1); }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-submit svg { transition: transform 0.2s; }
+    .btn-submit:hover svg { transform: translateX(3px); }
+
+    /* ── SUCCESS STATE ── */
+    .success-overlay {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(13,27,46,0.92); backdrop-filter: blur(12px);
+      align-items: center; justify-content: center;
+    }
+    .success-overlay.show { display: flex; }
+    .success-card {
+      background: var(--navy2);
+      border: 1px solid rgba(73,169,66,0.4);
+      border-radius: var(--radius-xl);
+      padding: 52px 48px; max-width: 540px; text-align: center;
+      box-shadow: 0 0 80px rgba(73,169,66,0.2), var(--shadow);
+      animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes popIn { from { opacity:0; transform: scale(0.85); } to { opacity:1; transform: scale(1); } }
+    .success-icon { font-size: 64px; margin-bottom: 20px; }
+    .success-title { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; color: var(--cream); margin-bottom: 14px; }
+    .success-sub { font-size: 15px; color: var(--muted); line-height: 1.75; margin-bottom: 28px; }
+    .success-id { font-family: 'Special Elite', monospace; font-size: 12px; color: var(--amber-light); letter-spacing: 0.12em; margin-bottom: 28px; }
+    .btn-back-home {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--green); color: #fff; padding: 12px 24px; border-radius: 9px;
+      font-size: 14px; font-weight: 600; text-decoration: none;
+      transition: all 0.2s; border: none; cursor: pointer;
+    }
+    .btn-back-home:hover { background: var(--green-light); transform: translateY(-1px); }
+
+    /* ── LOADING SPINNER ── */
+    .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .q-grid-3 { grid-template-columns: 1fr 1fr; }
+      .page-header { grid-template-columns: 1fr; }
+      .case-file-stamp { display: none; }
+    }
+    @media (max-width: 640px) {
+      .q-grid-2, .q-grid-3 { grid-template-columns: 1fr; }
+      .identity-grid { grid-template-columns: 1fr; }
+      .form-section { padding: 24px 20px; }
+      .submit-section { flex-direction: column; align-items: stretch; text-align: center; }
+      .page-wrap { padding: 36px 18px 80px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="scroll-progress"></div>
+  <div class="bg-ambient"></div>
+  <div class="bg-grid"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logo.png" alt="Resident Detective" />
+      </a>
+      <a href="index.html" class="nav-back">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M15 8H3.83l4.58-4.59L7 2 1 8l6 6 1.41-1.41L3.83 8H15z" opacity="0.8"/></svg>
+        Back to main page
+      </a>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+
+    <!-- HEADER -->
+    <div class="page-header reveal">
+      <div>
+        <div class="status-badge"><span class="status-dot"></span>Pilot Intake · Now Open</div>
+        <h1 class="page-title">Open the case file.<br/><em>Join the pilot.</em></h1>
+        <p class="page-sub">Resident Detective is moving toward its first community pilot and we're looking for the right partners to shape it. Fill this out to get on our radar — the more you can share, the better we can build it around your actual needs.</p>
+      </div>
+      <div class="case-file-stamp">
+        <div class="stamp-label">Case File</div>
+        <div class="stamp-id" id="intake-id">RD-2026</div>
+        <div class="stamp-line"></div>
+        <div class="stamp-sub">PILOT INTAKE</div>
+        <div class="stamp-sub" id="stamp-date"></div>
+        <div class="stamp-line"></div>
+        <div class="stamp-sub">LCS COLLAB TECH</div>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <form id="interest-form" novalidate>
+      <div class="form-card reveal">
+
+        <!-- SECTION 1: IDENTITY -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <div class="form-section-icon icon-blue">🏠</div>
+            <div>
+              <div class="form-section-title">About You &amp; Your Community</div>
+              <div class="form-section-sub">Required — this is how we reach you</div>
+            </div>
+            <div class="required-note">* Required</div>
+          </div>
+          <div class="identity-grid">
+            <div class="field">
+              <label class="field-label" for="f-name">Your Name *</label>
+              <input type="text" id="f-name" name="name" class="field-input" placeholder="First and last name" required autocomplete="name" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="f-email">Your Email *</label>
+              <input type="email" id="f-email" name="email" class="field-input" placeholder="you@lcsliving.com" required autocomplete="email" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="f-community">Community or Department *</label>
+              <input type="text" id="f-community" name="community" class="field-input" placeholder="e.g. Sagewood — Phoenix, AZ or Home Office IT" required />
+            </div>
+            <div class="field">
+              <label class="field-label" for="f-role">Your Role *</label>
+              <select id="f-role" name="role" class="field-select" required>
+                <option value="" disabled selected>Select your role…</option>
+                <option>Lifestyle / Activity Director</option>
+                <option>Activity Coordinator / Assistant</option>
+                <option>Executive Director</option>
+                <option>Director of Resident Services</option>
+                <option>Memory Care Coordinator</option>
+                <option>Home Office / Corporate</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: YOUR PROGRAMMING PRACTICE -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <div class="form-section-icon icon-amber">🎯</div>
+            <div>
+              <div class="form-section-title">How You Run Activities</div>
+              <div class="form-section-sub">Optional — helps us design around your real workflow</div>
+            </div>
+          </div>
+          <div class="q-grid-2">
+            <div class="q-card">
+              <div class="q-num">Q01</div>
+              <div class="q-text">Walk us through how you plan and run a typical group activity. What makes one a hit versus a flop?</div>
+              <textarea name="q1" class="field-textarea" placeholder="What does a great activity look like for your group?"></textarea>
+            </div>
+            <div class="q-card">
+              <div class="q-num">Q02</div>
+              <div class="q-text">What gets your hardest-to-engage residents to participate?</div>
+              <textarea name="q2" class="field-textarea" placeholder="What's the key that unlocks participation for reluctant residents?"></textarea>
+            </div>
+            <div class="q-card">
+              <div class="q-num">Q03</div>
+              <div class="q-text">How do you adapt a single activity for residents with different cognitive, vision, hearing, and mobility levels in the same room?</div>
+              <textarea name="q3" class="field-textarea" placeholder="What adaptations do you typically make?"></textarea>
+            </div>
+            <div class="q-card">
+              <div class="q-num">Q04</div>
+              <div class="q-text">What group sizes do you typically work with, and what's the ideal length for an activity?</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+                <div>
+                  <label class="field-label" style="font-size:10px;margin-bottom:4px;display:block;">Typical group size</label>
+                  <select name="q4_size" class="field-select" style="font-size:12px;padding:8px 10px;">
+                    <option value="" disabled selected>Select…</option>
+                    <option>1–4 residents</option>
+                    <option>5–8 residents</option>
+                    <option>9–15 residents</option>
+                    <option>16–25 residents</option>
+                    <option>25+ residents</option>
+                    <option>Varies widely</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="field-label" style="font-size:10px;margin-bottom:4px;display:block;">Ideal duration</label>
+                  <select name="q4_duration" class="field-select" style="font-size:12px;padding:8px 10px;">
+                    <option value="" disabled selected>Select…</option>
+                    <option>Under 30 minutes</option>
+                    <option>30–45 minutes</option>
+                    <option>45–60 minutes</option>
+                    <option>60–90 minutes</option>
+                    <option>90+ minutes</option>
+                    <option>Varies by group</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: THE CONCEPT -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <div class="form-section-icon icon-green">🔍</div>
+            <div>
+              <div class="form-section-title">The Resident Detective Concept</div>
+              <div class="form-section-sub">Optional — shapes how we build the experience</div>
+            </div>
+          </div>
+          <div class="q-grid-2">
+            <div class="q-card">
+              <div class="q-num">Q05</div>
+              <div class="q-text">Have you ever run a mystery, game-show, or themed event? How did it go?</div>
+              <textarea name="q5" class="field-textarea" placeholder="What happened? What worked, what didn't?"></textarea>
+            </div>
+            <div class="q-card">
+              <div class="q-num">Q06</div>
+              <div class="q-text">If you had a tool that generated a ready-to-run murder mystery, what would make you use it regularly?</div>
+              <textarea name="q6" class="field-textarea" placeholder="What would need to be true for it to become a go-to?"></textarea>
+            </div>
+            <div class="q-card">
+              <div class="q-num">Q07</div>
+              <div class="q-text">How much do you want to customize it vs. press-and-go?</div>
+              <div style="margin-top:6px;">
+                <div class="rating-scale">
+                  <input type="radio" name="q7" id="q7-1" value="1" class="rating-option"><label class="rating-label" for="q7-1">1</label>
+                  <input type="radio" name="q7" id="q7-2" value="2" class="rating-option"><label class="rating-label" for="q7-2">2</label>
+                  <input type="radio" name="q7" id="q7-3" value="3" class="rating-option"><label class="rating-label" for="q7-3">3</label>
+                  <input type="radio" name="q7" id="q7-4" value="4" class="rating-option"><label class="rating-label" for="q7-4">4</label>
+                  <input type="radio" name="q7" id="q7-5" value="5" class="rating-option"><label class="rating-label" for="q7-5">5</label>
+                </div>
+                <div class="rating-ends"><span>1 = Just press go</span><span>5 = Full control</span></div>
+              </div>
+            </div>
+            <div class="q-card">
+              <div class="q-num">Q08</div>
+              <div class="q-text">What physical materials matter most to you?</div>
+              <div class="check-grid" style="margin-top:6px;">
+                <label class="check-item"><input type="checkbox" name="q8" value="character_cards"><span class="check-box"></span><span class="check-label">Printed character cards</span></label>
+                <label class="check-item"><input type="checkbox" name="q8" value="clue_sheets"><span class="check-box"></span><span class="check-label">Clue / evidence sheets</span></label>
+                <label class="check-item"><input type="checkbox" name="q8" value="large_print"><span class="check-box"></span><span class="check-label">Large-print versions</span></label>
+                <label class="check-item"><input type="checkbox" name="q8" value="props"><span class="check-box"></span><span class="check-label">Physical props</span></label>
+                <label class="check-item"><input type="checkbox" name="q8" value="name_badges"><span class="check-box"></span><span class="check-label">Name badges</span></label>
+                <label class="check-item"><input type="checkbox" name="q8" value="facilitator_guide"><span class="check-box"></span><span class="check-label">Facilitator guide</span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 4: LOGISTICS & TECH -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <div class="form-section-icon icon-lime">💻</div>
+            <div>
+              <div class="form-section-title">Logistics &amp; Technology</div>
+              <div class="form-section-sub">Optional — helps us understand your real environment</div>
+            </div>
+          </div>
+          <div class="q-grid-3">
+            <div class="q-card">
+              <div class="q-num">Q09</div>
+              <div class="q-text">What device would you run this on, and how comfortable are you using technology during activities?</div>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+                <select name="q9_device" class="field-select" style="font-size:12px;padding:8px 10px;">
+                  <option value="" disabled selected>Primary device…</option>
+                  <option>Tablet (iPad or similar)</option>
+                  <option>Laptop or desktop computer</option>
+                  <option>Shared community TV or display</option>
+                  <option>Printed materials only</option>
+                  <option>Smartphone</option>
+                  <option>Not sure yet</option>
+                </select>
+                <select name="q9_comfort" class="field-select" style="font-size:12px;padding:8px 10px;">
+                  <option value="" disabled selected>Tech comfort level…</option>
+                  <option>Very comfortable — I use tech regularly in activities</option>
+                  <option>Comfortable with simple tools</option>
+                  <option>Prefer minimal tech during sessions</option>
+                  <option>I'd prep on tech, then run on paper only</option>
+                </select>
+              </div>
+            </div>
+            <div class="q-card">
+              <div class="q-num">Q10</div>
+              <div class="q-text">What's the most time-consuming part of activity prep today where a tool could save you time?</div>
+              <textarea name="q10" class="field-textarea" placeholder="Writing materials, finding ideas, adapting for ability levels…"></textarea>
+            </div>
+            <div class="q-card q-full" style="grid-column: 3;">
+              <div style="display:flex;flex-direction:column;height:100%;justify-content:center;align-items:center;text-align:center;gap:10px;padding:12px;">
+                <div style="font-size:32px;">⏱️</div>
+                <div style="font-size:13px;color:var(--muted);line-height:1.6;">The typical activity prep cycle is <strong style="color:var(--cream2);">hours of searching, writing, and adapting.</strong> We're building to cut that to minutes.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 5: RISKS & WISHLIST -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <div class="form-section-icon" style="background:rgba(176,188,34,0.15);">🚧</div>
+            <div>
+              <div class="form-section-title">Risks &amp; Wishlist</div>
+              <div class="form-section-sub">Optional — the most important section for the team</div>
+            </div>
+          </div>
+          <div class="q-grid-2">
+            <div class="q-card">
+              <div class="q-num">Q11</div>
+              <div class="q-text">What would make a tool like this <em style="color:var(--cream2);">fail</em> in your community?</div>
+              <textarea name="q11" class="field-textarea" placeholder="Be direct — what would cause you to stop using it?"></textarea>
+            </div>
+            <div class="q-card">
+              <div class="q-num">Q12</div>
+              <div class="q-text">If Resident Detective existed tomorrow, what's the <em style="color:var(--cream2);">one feature</em> you'd insist on for the first version?</div>
+              <textarea name="q12" class="field-textarea" placeholder="The single thing that would make it worth adopting immediately…"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBMIT -->
+        <div class="submit-section">
+          <div class="submit-note">
+            <strong>All questions except name, email, community, and role are optional.</strong> Share as much or as little as you'd like — every response helps us build something that actually works in your community.
+          </div>
+          <button type="submit" class="btn-submit" id="submit-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            Submit My Intake
+          </button>
+        </div>
+
+      </div>
+    </form>
+
+  </div><!-- /page-wrap -->
+
+  <!-- SUCCESS OVERLAY -->
+  <div class="success-overlay" id="success-overlay">
+    <div class="success-card">
+      <div class="success-icon">🕵️</div>
+      <div class="success-title">Case file received.</div>
+      <p class="success-sub">You're on our list. The Resident Detective team will be in touch as we move into the pilot phase. In the meantime, keep an eye on the main page for updates.</p>
+      <div class="success-id" id="success-ref">REF: RD-2026-0001</div>
+      <a href="index.html" class="btn-back-home">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 10.5h-1.5v-5h1.5v5zm0-6.5h-1.5V3.5h1.5V5z"/></svg>
+        Back to Resident Detective
+      </a>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    'use strict';
+
+    /* ── SCROLL PROGRESS ── */
+    const prog = document.getElementById('scroll-progress');
+    document.addEventListener('scroll', () => {
+      const h = document.documentElement;
+      prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+    }, { passive: true });
+
+    /* ── STAMP DATE & INTAKE ID ── */
+    const now = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    const dateStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+    document.getElementById('stamp-date').textContent = dateStr;
+    const intakeNum = String(Math.floor(Math.random() * 900) + 100);
+    const intakeId = `RD-${now.getFullYear()}-${intakeNum}`;
+    document.getElementById('intake-id').textContent = intakeId;
+    document.getElementById('success-ref').textContent = 'REF: ' + intakeId;
+
+    /* ── SCROLL REVEAL ── */
+    const ro = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); }
+      });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+    /* ── CHECKBOX MULTI-VALUE HELPER ── */
+    function getCheckboxValues(name) {
+      return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(el => el.value).join(', ');
+    }
+
+    /* ── FORM SUBMISSION ── */
+    const form = document.getElementById('interest-form');
+    const submitBtn = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Basic required field validation
+      const name = document.getElementById('f-name').value.trim();
+      const email = document.getElementById('f-email').value.trim();
+      const community = document.getElementById('f-community').value.trim();
+      const role = document.getElementById('f-role').value;
+
+      if (!name || !email || !community || !role) {
+        const firstEmpty = [
+          ['f-name', name], ['f-email', email], ['f-community', community], ['f-role', role]
+        ].find(([, val]) => !val);
+        if (firstEmpty) {
+          const el = document.getElementById(firstEmpty[0]);
+          el.focus();
+          el.style.borderColor = '#e05252';
+          el.style.boxShadow = '0 0 0 3px rgba(224,82,82,0.2)';
+          setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; }, 2500);
+        }
+        return;
+      }
+
+      // Collect all data
+      const data = {
+        intake_id: intakeId,
+        submitted_at: new Date().toISOString(),
+        name, email, community, role,
+        q1: form.q1?.value?.trim() || '',
+        q2: form.q2?.value?.trim() || '',
+        q3: form.q3?.value?.trim() || '',
+        q4_size: form.q4_size?.value || '',
+        q4_duration: form.q4_duration?.value || '',
+        q5: form.q5?.value?.trim() || '',
+        q6: form.q6?.value?.trim() || '',
+        q7_customize_scale: form.q7?.value || '',
+        q8_materials: getCheckboxValues('q8'),
+        q9_device: form.q9_device?.value || '',
+        q9_comfort: form.q9_comfort?.value || '',
+        q10: form.q10?.value?.trim() || '',
+        q11: form.q11?.value?.trim() || '',
+        q12: form.q12?.value?.trim() || '',
+      };
+
+      // Show loading state
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> Submitting…';
+
+      /* ── PRIMARY: Try to log via Formspree (free, no backend needed) ── */
+      let submitted = false;
+      try {
+        const res = await fetch('https://formspree.io/f/xyzpqrst', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (res.ok) submitted = true;
+      } catch (_) { /* fall through to mailto */ }
+
+      /* ── FALLBACK: mailto if Formspree not configured ── */
+      if (!submitted) {
+        const body = Object.entries(data)
+          .map(([k, v]) => `${k}: ${v || '(not provided)'}`)
+          .join('\n');
+        const mailto = `mailto:CollaborationTechnology@lcsliving.com?subject=RD%20Pilot%20Intake%20${encodeURIComponent(intakeId)}&body=${encodeURIComponent(body)}`;
+        // store in localStorage as backup
+        try {
+          const existing = JSON.parse(localStorage.getItem('rd_intakes') || '[]');
+          existing.push(data);
+          localStorage.setItem('rd_intakes', JSON.stringify(existing));
+        } catch (_) {}
+        // Open mailto — works even if Formspree not yet configured
+        window.location.href = mailto;
+        submitted = true;
+      }
+
+      // Show success
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Submit My Intake';
+      document.getElementById('success-overlay').classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    /* Close success on backdrop click */
+    document.getElementById('success-overlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        e.currentTarget.classList.remove('show');
+      }
+    });
+
+  })();
+  </script>
+</body>
+</html>
