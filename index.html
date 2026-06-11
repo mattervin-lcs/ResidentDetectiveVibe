@@ -147,24 +147,7 @@
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .hero-sub { font-size: 15px; color: var(--muted); line-height: 1.75; margin-bottom: 28px; }
-    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
-    .hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .hero-stat {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px; padding: 12px 14px;
-      transition: border-color 0.3s, transform 0.3s;
-    }
-    .hero-stat:hover { border-color: rgba(0,129,198,0.35); transform: translateY(-2px); }
-    .hero-stat-val {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.55rem; font-weight: 900; line-height: 1;
-      background: linear-gradient(135deg, var(--blue-light), var(--green-light));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text; margin-bottom: 4px;
-    }
-    .hero-stat-label { font-size: 11px; color: var(--muted); line-height: 1.4; }
+    .hero-sub { font-size: 15px; color: var(--muted); line-height: 1.75; margin-bottom: 22px; }
 
     /* App preview — 3D tilt wrapper */
     .tilt-wrap { perspective: 1200px; }
@@ -599,6 +582,108 @@
       .cta-card { padding: 36px 22px; }
       .nav-logo img { height: 38px; }
     }
+    /* ── HERO NAV BUTTONS ── */
+    .hero-nav-btns {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; margin-top: 8px;
+    }
+    .hero-nav-btn {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 11px 14px;
+      font-size: 13px; font-weight: 500; color: var(--cream2);
+      text-decoration: none;
+      transition: all 0.2s; cursor: pointer;
+    }
+    .hero-nav-btn:hover {
+      background: rgba(0,129,198,0.12);
+      border-color: rgba(0,129,198,0.4);
+      color: var(--cream); transform: translateY(-2px);
+    }
+    .hero-nav-btn-icon { font-size: 16px; flex-shrink: 0; }
+    .hero-nav-btn--cta {
+      background: rgba(73,169,66,0.12);
+      border-color: rgba(73,169,66,0.4);
+      color: var(--green-light); font-weight: 700;
+    }
+    .hero-nav-btn--cta:hover {
+      background: rgba(73,169,66,0.22);
+      border-color: var(--green);
+      color: #fff;
+    }
+
+    /* ── VIDEO LABEL ── */
+    .video-section-label {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 12px;
+    }
+    .video-label-eyebrow {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--blue-light);
+      background: rgba(0,129,198,0.1); border: 1px solid rgba(0,129,198,0.25);
+      border-radius: 999px; padding: 4px 10px;
+    }
+    .video-label-title { font-size: 14px; font-weight: 600; color: var(--cream2); }
+
+    /* ── STATS BAR (inside consolidated section) ── */
+    .stats-bar {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 12px; margin: 28px 0 0;
+    }
+    .stat-item {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; padding: 14px 16px; text-align: center;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .stat-item:hover { border-color: rgba(0,129,198,0.35); transform: translateY(-2px); }
+    .stat-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem; font-weight: 900; line-height: 1;
+      background: linear-gradient(135deg, var(--blue-light), var(--green-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 5px;
+    }
+    .stat-label { font-size: 11px; color: var(--muted); line-height: 1.4; }
+    @media (max-width: 860px) { .stats-bar { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .hero-nav-btns { grid-template-columns: 1fr 1fr; } .stats-bar { grid-template-columns: 1fr 1fr; } }
+
+    /* ── USE CASES ── */
+    .usecase-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .usecase-card {
+      background: var(--navy2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius-lg);
+      padding: 24px 22px;
+      display: flex; flex-direction: column; gap: 0;
+      transition: all 0.3s; cursor: default;
+      position: relative; overflow: hidden;
+    }
+    .usecase-card::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .usecase-card:hover { border-color: rgba(0,129,198,0.35); transform: translateY(-4px); box-shadow: var(--glow-blue); }
+    .usecase-card:hover::before { opacity: 1; }
+    .usecase-card--future { border-style: dashed; border-color: rgba(73,169,66,0.3); background: rgba(73,169,66,0.04); }
+    .usecase-card--future:hover { border-color: rgba(73,169,66,0.6); box-shadow: var(--glow-green); }
+    .usecase-card--future::before { background: linear-gradient(90deg, var(--green), var(--lime)); }
+    .usecase-card { padding: 18px 18px; }
+    .usecase-icon { font-size: 24px; margin-bottom: 10px; }
+    .usecase-title { font-size: 14px; font-weight: 700; color: var(--cream); margin-bottom: 8px; line-height: 1.3; }
+    .usecase-body { font-size: 12px; color: var(--muted); line-height: 1.65; flex: 1; margin-bottom: 12px; }
+    .usecase-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+    .usecase-tags span {
+      font-size: 10px; font-weight: 600;
+      background: rgba(0,129,198,0.1); border: 1px solid rgba(0,129,198,0.2);
+      color: var(--blue-light); border-radius: 4px; padding: 3px 8px;
+    }
+    .usecase-card--future .usecase-tags span { background: rgba(73,169,66,0.1); border-color: rgba(73,169,66,0.25); color: var(--green-light); }
+    @media (max-width: 1100px) { .usecase-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .usecase-grid { grid-template-columns: 1fr; } }
+
   </style>
 </head>
 <body>
@@ -617,10 +702,10 @@
         <ul class="nav-links">
           <li><a href="#what" data-section="what">What It Is</a></li>
           <li><a href="#how" data-section="how">How It Works</a></li>
-          <li><a href="#audience" data-section="audience">Who It's For</a></li>
+          <li><a href="#usecases" data-section="usecases">Use Cases</a></li>
           <li><a href="#demo" data-section="demo">Try It</a></li>
           <li><a href="#faq" data-section="faq">FAQ</a></li>
-          <li><a href="#contact" data-section="contact">Contact</a></li>
+          <li><a href="interest.html" style="color:var(--green-light);font-weight:700;">Join the Pilot →</a></li>
         </ul>
       </div>
     </nav>
@@ -629,29 +714,43 @@
     <section class="hero" id="top">
       <div class="hero-inner">
         <div class="reveal">
-          <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span>An LCS Collaboration Technology Project</div>
-          <h1 class="hero-headline">The mystery that<br/><em>writes itself.</em></h1>
-          <p class="hero-sub">Resident Detective is an AI-powered tool that creates custom, printable mystery and roleplay sessions for senior living communities. Staff describe the session they want — the tool writes the story, the characters, and the script. Residents play on paper. No screens required.</p>
-          <div class="hero-actions">
-            <a href="#how" class="btn-primary">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 10.5h-1.5v-5h1.5v5zm0-6.5h-1.5V3.5h1.5V5z"/></svg>
-              How It Works
+          <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span>InnoTank 2026 · Greenlit for Pilot · LCS Collaboration Technology</div>
+          <h1 class="hero-headline">Your residents are<br/><em>the suspects now.</em></h1>
+          <p class="hero-sub">Resident Detective was greenlit after InnoTank 2026 and is now moving toward a community pilot. We're expanding the concept, building out the system, and gathering input from communities who want in early. This page keeps the LCS family up to date on where things stand.</p>
+          <div class="hero-nav-btns">
+            <a href="#what" class="hero-nav-btn">
+              <span class="hero-nav-btn-icon">💡</span>
+              <span>What It Is</span>
             </a>
-            <a href="#demo" class="btn-ghost">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M2 3h12v2H2zm0 4h12v2H2zm0 4h8v2H2z"/></svg>
-              Try the Preview
+            <a href="#how" class="hero-nav-btn">
+              <span class="hero-nav-btn-icon">⚙️</span>
+              <span>How It Works</span>
             </a>
-          </div>
-          <div class="hero-stats">
-            <div class="hero-stat"><div class="hero-stat-val"><span class="countup" data-target="8" data-prefix="&lt;" data-suffix=" min">&lt;8 min</span></div><div class="hero-stat-label">Open app to printed packet in hand</div></div>
-            <div class="hero-stat"><div class="hero-stat-val"><span class="countup" data-target="119">119</span></div><div class="hero-stat-label">LCS communities at full rollout</div></div>
-            <div class="hero-stat"><div class="hero-stat-val"><span class="countup" data-target="5" data-suffix=" yrs">5 yrs</span></div><div class="hero-stat-label">Cognitive activity may delay Alzheimer's onset</div></div>
-            <div class="hero-stat"><div class="hero-stat-val">$0</div><div class="hero-stat-label">Technology required for residents</div></div>
+            <a href="#usecases" class="hero-nav-btn">
+              <span class="hero-nav-btn-icon">🎭</span>
+              <span>Use Cases</span>
+            </a>
+            <a href="#demo" class="hero-nav-btn">
+              <span class="hero-nav-btn-icon">🔍</span>
+              <span>Try It</span>
+            </a>
+            <a href="#faq" class="hero-nav-btn">
+              <span class="hero-nav-btn-icon">💬</span>
+              <span>FAQ</span>
+            </a>
+            <a href="interest.html" class="hero-nav-btn hero-nav-btn--cta">
+              <span class="hero-nav-btn-icon">✅</span>
+              <span>Join the Pilot</span>
+            </a>
           </div>
         </div>
 
         <!-- Commercial video -->
         <div class="reveal">
+          <div class="video-section-label">
+            <span class="video-label-eyebrow">📺 Commercial</span>
+            <span class="video-label-title">See Resident Detective in action</span>
+          </div>
           <div class="video-wrap" id="video-wrap">
             <video id="rd-video" poster="assets/video-poster.jpg" preload="metadata" playsinline>
               <source src="assets/resident-detective-overview.mp4" type="video/mp4" />
@@ -674,23 +773,25 @@
 
     <hr class="section-divider"/>
 
-    <!-- WHAT IS IT -->
+    <!-- CONSOLIDATED: WHAT IT IS + WHO IT'S FOR + WHAT IT CREATES -->
     <section id="what">
       <div class="container">
-        <div class="what-grid">
-          <div class="reveal">
+
+        <!-- Top: description left, 4 feature cards right -->
+        <div class="what-grid reveal">
+          <div>
             <div class="section-eyebrow">What It Is</div>
             <h2 class="section-headline">A session generator<br/><em>built for activity teams.</em></h2>
             <p class="section-body">
-              Resident Detective is a web tool for senior living staff. You enter a theme, the names of the residents who will play, and how long the session should run. The tool's AI then writes a complete, original mystery experience around that exact group — and formats everything as printable documents.
+              Resident Detective is a web tool for senior living staff. Enter a theme, the names of the residents who will play, and how long the session runs. The AI writes a complete, original mystery around that exact group — and formats everything as printable documents.
               <br/><br/>
               The entire activity runs on paper and conversation. Residents never touch a screen, download an app, or create an account.
             </p>
           </div>
-          <div class="what-cards reveal">
+          <div class="what-cards">
             <div class="what-card">
               <div class="what-icon what-icon-blue">🧠</div>
-              <div><div class="what-card-title">Cognitive Engagement</div><div class="what-card-body">Sessions are built around deduction, memory recall, and storytelling — structured thinking wrapped in a low-pressure game.</div></div>
+              <div><div class="what-card-title">Cognitive Engagement</div><div class="what-card-body">Deduction, memory recall, and storytelling — structured thinking wrapped in a low-pressure game.</div></div>
             </div>
             <div class="what-card">
               <div class="what-icon what-icon-green">👥</div>
@@ -702,16 +803,111 @@
             </div>
             <div class="what-card">
               <div class="what-icon what-icon-blue">🖨️</div>
-              <div><div class="what-card-title">Print &amp; Play</div><div class="what-card-body">Character sheets, facilitator guide, and clue cards all print on standard paper. No tablets, logins, or devices for residents.</div></div>
+              <div><div class="what-card-title">Print &amp; Play</div><div class="what-card-body">Character sheets, facilitator guide, and clue cards print on standard paper. No tablets, logins, or devices for residents.</div></div>
             </div>
           </div>
         </div>
+
+        <!-- Stats bar -->
+        <div class="stats-bar reveal">
+          <div class="stat-item">
+            <div class="stat-val"><span class="countup" data-target="8" data-prefix="&lt;" data-suffix=" min">&lt;8 min</span></div>
+            <div class="stat-label">Open app to printed packet in hand</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val"><span class="countup" data-target="119">119</span></div>
+            <div class="stat-label">LCS communities at full rollout</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val"><span class="countup" data-target="5" data-suffix=" yrs">5 yrs</span></div>
+            <div class="stat-label">Cognitive activity may delay Alzheimer's onset</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val">$0</div>
+            <div class="stat-label">Technology required for residents</div>
+          </div>
+        </div>
+
+        <!-- Bottom: who it's for (left) + what it creates flip cards (right) -->
+        <div class="audience-outputs-row reveal" style="margin-top:40px;">
+          <div>
+            <div class="col-header">
+              <div class="section-eyebrow">Who It's For</div>
+              <h3 class="section-headline" style="font-size:clamp(1.3rem,1.8vw,1.9rem);">Built for everyone<br/><em>around the table.</em></h3>
+            </div>
+            <div class="for-whom-stack">
+              <div class="for-card">
+                <div class="for-card-emoji">🎯</div>
+                <div><div class="for-card-title">Activity &amp; Lifestyle Directors</div><div class="for-card-body">The tool handles the writing and structure so staff time goes to facilitating, not preparing. Walk in with a printed packet; the guide carries the session.</div></div>
+              </div>
+              <div class="for-card">
+                <div class="for-card-emoji">👴</div>
+                <div><div class="for-card-title">Residents</div><div class="for-card-body">Every resident receives a character written for them by name. The experience is social and tactile — printed pages, conversation, and a mystery to untangle together.</div></div>
+              </div>
+              <div class="for-card">
+                <div class="for-card-emoji">🏢</div>
+                <div><div class="for-card-title">Community Leaders</div><div class="for-card-body">A new category of programming that supports cognitive and social wellbeing, runs on existing printers and browsers, and works the same way at every community.</div></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="col-header">
+              <div class="section-eyebrow">What It Creates</div>
+              <h3 class="section-headline" style="font-size:clamp(1.3rem,1.8vw,1.9rem);">Every session,<br/><em>a complete packet.</em></h3>
+              <p style="font-size:12px;color:var(--muted);margin-top:4px;">Hover or tap each card to see what's inside.</p>
+            </div>
+            <div class="outputs-stack">
+              <div class="flip-card" tabindex="0" role="button" aria-label="Character Sheets — flip for details">
+                <div class="flip-card-inner">
+                  <div class="flip-front">
+                    <div class="flip-icon">📄</div>
+                    <div class="flip-front-text"><div class="flip-front-title">Character Sheets</div><div class="flip-front-sub">One per resident, written by name</div></div>
+                    <div class="flip-hint">↩ flip</div>
+                  </div>
+                  <div class="flip-back">
+                    <div class="flip-back-title">Character name · backstory · clues held · secrets kept · conversation starters</div>
+                    <div class="flip-back-items">
+                      <span class="flip-back-item">Written for each resident</span><span class="flip-back-item">Era-appropriate backstory</span><span class="flip-back-item">Cognitive-level language</span><span class="flip-back-item">Large print available</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flip-card" tabindex="0" role="button" aria-label="Facilitator Guide — flip for details">
+                <div class="flip-card-inner">
+                  <div class="flip-front">
+                    <div class="flip-icon">📋</div>
+                    <div class="flip-front-text"><div class="flip-front-title">Facilitator Guide</div><div class="flip-front-sub">The staff script, start to solution</div></div>
+                    <div class="flip-hint">↩ flip</div>
+                  </div>
+                  <div class="flip-back">
+                    <div class="flip-back-title">Scene flow · discussion prompts · clue timing · full solution · adaptation notes</div>
+                    <div class="flip-back-items">
+                      <span class="flip-back-item">Timed scene-by-scene</span><span class="flip-back-item">No rehearsal needed</span><span class="flip-back-item">Full mystery reveal</span><span class="flip-back-item">Group adaptation tips</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flip-card" tabindex="0" role="button" aria-label="Clue and Evidence Cards — flip for details">
+                <div class="flip-card-inner">
+                  <div class="flip-front">
+                    <div class="flip-icon">🃏</div>
+                    <div class="flip-front-text"><div class="flip-front-title">Clue &amp; Evidence Cards</div><div class="flip-front-sub">Physical props for the table</div></div>
+                    <div class="flip-hint">↩ flip</div>
+                  </div>
+                  <div class="flip-back">
+                    <div class="flip-back-title">Printable props · referenced in the story · passed between residents during play</div>
+                    <div class="flip-back-items">
+                      <span class="flip-back-item">Telegrams, monograms</span><span class="flip-back-item">Print &amp; cut — no design</span><span class="flip-back-item">Encourage light movement</span><span class="flip-back-item">Scale with group size</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
-
-    <hr class="section-divider"/>
-
-    <!-- HOW IT WORKS -->
     <section id="how" class="how-section">
       <div class="container">
         <div style="margin-bottom:36px;" class="reveal">
@@ -815,83 +1011,55 @@
 
     <hr class="section-divider"/>
 
-    <!-- WHO IT'S FOR + WHAT IT CREATES -->
-    <section id="audience">
+    <!-- USE CASES -->
+    <section id="usecases">
       <div class="container">
-        <div class="audience-outputs-row">
-          <div class="reveal">
-            <div class="col-header">
-              <div class="section-eyebrow">Who It's For</div>
-              <h2 class="section-headline">Built for the people<br/><em>on both sides of the table.</em></h2>
-            </div>
-            <div class="for-whom-stack">
-              <div class="for-card">
-                <div class="for-card-emoji">🎯</div>
-                <div><div class="for-card-title">Activity &amp; Lifestyle Directors</div><div class="for-card-body">The tool handles the writing and structure so staff time goes to facilitating, not preparing. Walk in with a printed packet; the guide carries the session.</div></div>
-              </div>
-              <div class="for-card">
-                <div class="for-card-emoji">👴</div>
-                <div><div class="for-card-title">Residents</div><div class="for-card-body">Every resident receives a character written for them by name. The experience is social and tactile — printed pages, conversation, and a mystery to untangle together.</div></div>
-              </div>
-              <div class="for-card">
-                <div class="for-card-emoji">🏢</div>
-                <div><div class="for-card-title">Community Leaders</div><div class="for-card-body">A new category of programming that supports cognitive and social wellbeing, runs on existing printers and browsers, and works the same way at every community.</div></div>
-              </div>
-            </div>
+        <div style="margin-bottom:28px;" class="reveal">
+          <div class="section-eyebrow">Where It Fits</div>
+          <h2 class="section-headline">More than one kind of session.</h2>
+        </div>
+        <div class="usecase-grid reveal">
+          <div class="usecase-card">
+            <div class="usecase-icon">🔍</div>
+            <div class="usecase-tag">Core Use</div>
+            <div class="usecase-title">Resident Mystery Sessions</div>
+            <div class="usecase-body">The flagship format. A small group of residents each receive a character sheet and work together to solve an original mystery. 30–90 minutes, fully facilitated by printed materials alone.</div>
+            <div class="usecase-tags"><span>Memory Care</span><span>Independent Living</span><span>Assisted Living</span></div>
           </div>
-          <div class="reveal">
-            <div class="col-header">
-              <div class="section-eyebrow">What It Creates</div>
-              <h2 class="section-headline">Every session generates<br/><em>a complete packet.</em></h2>
-              <p style="font-size:12px;color:var(--muted);margin-top:4px;">Hover or tap each card to see what's inside.</p>
-            </div>
-            <div class="outputs-stack">
-              <div class="flip-card" tabindex="0" role="button" aria-label="Character Sheets — flip for details">
-                <div class="flip-card-inner">
-                  <div class="flip-front">
-                    <div class="flip-icon">📄</div>
-                    <div class="flip-front-text"><div class="flip-front-title">Character Sheets</div><div class="flip-front-sub">One per resident, written by name</div></div>
-                    <div class="flip-hint">↩ flip</div>
-                  </div>
-                  <div class="flip-back">
-                    <div class="flip-back-title">Character name · backstory · clues held · secrets kept · conversation starters</div>
-                    <div class="flip-back-items">
-                      <span class="flip-back-item">Written for each resident</span><span class="flip-back-item">Era-appropriate backstory</span><span class="flip-back-item">Cognitive-level language</span><span class="flip-back-item">Large print available</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="flip-card" tabindex="0" role="button" aria-label="Facilitator Guide — flip for details">
-                <div class="flip-card-inner">
-                  <div class="flip-front">
-                    <div class="flip-icon">📋</div>
-                    <div class="flip-front-text"><div class="flip-front-title">Facilitator Guide</div><div class="flip-front-sub">The staff script, start to solution</div></div>
-                    <div class="flip-hint">↩ flip</div>
-                  </div>
-                  <div class="flip-back">
-                    <div class="flip-back-title">Scene flow · discussion prompts · clue timing · full solution · adaptation notes</div>
-                    <div class="flip-back-items">
-                      <span class="flip-back-item">Timed scene-by-scene</span><span class="flip-back-item">No rehearsal needed</span><span class="flip-back-item">Full mystery reveal</span><span class="flip-back-item">Group adaptation tips</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="flip-card" tabindex="0" role="button" aria-label="Clue and Evidence Cards — flip for details">
-                <div class="flip-card-inner">
-                  <div class="flip-front">
-                    <div class="flip-icon">🃏</div>
-                    <div class="flip-front-text"><div class="flip-front-title">Clue &amp; Evidence Cards</div><div class="flip-front-sub">Physical props for the table</div></div>
-                    <div class="flip-hint">↩ flip</div>
-                  </div>
-                  <div class="flip-back">
-                    <div class="flip-back-title">Printable props · referenced in the story · passed between residents during play</div>
-                    <div class="flip-back-items">
-                      <span class="flip-back-item">Telegrams, monograms</span><span class="flip-back-item">Print &amp; cut — no design</span><span class="flip-back-item">Encourage light movement</span><span class="flip-back-item">Scale with group size</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="usecase-card">
+            <div class="usecase-icon">🎭</div>
+            <div class="usecase-tag">Programming</div>
+            <div class="usecase-title">Themed Community Events</div>
+            <div class="usecase-body">Scale up the mystery for a larger event — a 1920s speakeasy night, a garden party whodunit, a holiday party with a twist. The same tool generates materials for a dozen participants as easily as five.</div>
+            <div class="usecase-tags"><span>Seasonal Events</span><span>Holiday Programming</span><span>Large Groups</span></div>
+          </div>
+          <div class="usecase-card">
+            <div class="usecase-icon">🧩</div>
+            <div class="usecase-tag">Memory Care</div>
+            <div class="usecase-title">Cognitive Engagement</div>
+            <div class="usecase-body">Set to "Light" mode, the tool generates shorter character sheets, simpler clue chains, and more facilitator guidance — structured cognitive activity wrapped in a low-pressure format that feels fun, not clinical.</div>
+            <div class="usecase-tags"><span>Deduction</span><span>Memory Recall</span><span>Low Pressure</span></div>
+          </div>
+          <div class="usecase-card">
+            <div class="usecase-icon">🌱</div>
+            <div class="usecase-tag">New Use Case</div>
+            <div class="usecase-title">Staff Team Building</div>
+            <div class="usecase-body">The same engine works for staff. Run a mystery at a team meeting, department retreat, or onboarding event. Change the theme, swap in staff names, and the tool generates an original experience for your group — a different kind of icebreaker.</div>
+            <div class="usecase-tags"><span>Onboarding</span><span>Team Retreats</span><span>Staff Events</span></div>
+          </div>
+          <div class="usecase-card">
+            <div class="usecase-icon">👨‍👩‍👧</div>
+            <div class="usecase-tag">Family Connection</div>
+            <div class="usecase-title">Resident &amp; Family Visits</div>
+            <div class="usecase-body">A mystery gives visiting family members something structured to do together — no awkward silences, no passive observation. Everyone has a character. Everyone has a role. The visit becomes a shared story.</div>
+            <div class="usecase-tags"><span>Family Engagement</span><span>Visit Programming</span><span>Intergenerational</span></div>
+          </div>
+          <div class="usecase-card usecase-card--future">
+            <div class="usecase-icon">✨</div>
+            <div class="usecase-tag">On the Roadmap</div>
+            <div class="usecase-title">What comes next?</div>
+            <div class="usecase-body">We're expanding use cases based on input from communities. If you have a scenario that isn't covered here — a format, a group type, or a need — we want to hear about it during the pilot phase.</div>
+            <div class="usecase-tags"><span><a href="interest.html" style="color:var(--green-light);text-decoration:none;font-weight:700;">Share your ideas →</a></span></div>
           </div>
         </div>
       </div>
@@ -916,7 +1084,7 @@
             </div>
             <div class="names-row">
               <input type="text" class="names-input" id="names-input"
-                     value="Eleanor, Frank, Dorothy, Walter, Ruth"
+                     value="Matt, Gunnar, Jeff, Brady, Jacob"
                      placeholder="Type first names, separated by commas…"
                      aria-label="Resident first names, separated by commas" />
               <button class="shuffle-btn" id="shuffle-btn" title="Generate a different story in this theme">🎲 Shuffle story</button>
@@ -1013,13 +1181,19 @@
     <section id="contact" class="cta-section">
       <div class="container">
         <div class="cta-card reveal">
-          <div class="section-eyebrow" style="margin-bottom:10px;">LCS Collaboration Technology</div>
-          <h2 class="section-headline">Questions, ideas, or<br/><em>interest in the pilot?</em></h2>
-          <p class="section-body">Resident Detective is in active development, with a community pilot planned as the next phase. Whether you have a question about how it works, an idea to share, or want your community considered — the team would like to hear from you.</p>
-          <a href="mailto:CollaborationTechnology@lcsliving.com?subject=Resident%20Detective" class="btn-primary" style="font-size:15px;padding:14px 30px;">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1 4a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H3a2 2 0 01-2-2V4zm2-.5a.5.5 0 00-.5.5v.4l5.5 3.44L13.5 4.4V4a.5.5 0 00-.5-.5H3zm10.5 2.27L8.4 9.08a.75.75 0 01-.8 0L2.5 5.77V12a.5.5 0 00.5.5h10a.5.5 0 00.5-.5V5.77z"/></svg>
-            Contact the Team
-          </a>
+          <div class="section-eyebrow" style="margin-bottom:10px;">LCS Collaboration Technology · InnoTank 2026</div>
+          <h2 class="section-headline">Want your community<br/><em>in the pilot?</em></h2>
+          <p class="section-body">We're actively shaping the pilot and looking for communities that want to be involved early. Share a bit about how your team runs activities and what you'd need from a tool like this — it helps us build it right.</p>
+          <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+            <a href="interest.html" class="btn-primary" style="font-size:15px;padding:14px 30px;">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm3.854 5.146a.5.5 0 010 .708l-3 3a.5.5 0 01-.708 0l-1.5-1.5a.5.5 0 01.708-.708L8.5 8.793l2.646-2.647a.5.5 0 01.708 0z"/></svg>
+              Express Interest in the Pilot
+            </a>
+            <a href="mailto:CollaborationTechnology@lcsliving.com?subject=Resident%20Detective" class="btn-ghost" style="font-size:15px;padding:14px 30px;">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1 4a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H3a2 2 0 01-2-2V4zm2-.5a.5.5 0 00-.5.5v.4l5.5 3.44L13.5 4.4V4a.5.5 0 00-.5-.5H3zm10.5 2.27L8.4 9.08a.75.75 0 01-.8 0L2.5 5.77V12a.5.5 0 00.5.5h10a.5.5 0 00.5-.5V5.77z"/></svg>
+              Email the Team
+            </a>
+          </div>
           <div class="team-row">
             <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%;">
               <div class="team-chip"><div class="team-avatar av-1">ME</div>Matt Ervin</div>
@@ -1066,7 +1240,7 @@
 
     /* ════════ SCROLLSPY ════════ */
     const navLinks = document.querySelectorAll('.nav-links a[data-section]');
-    const sectionIds = ['what','how','audience','demo','faq','contact'];
+    const sectionIds = ['what','how','usecases','demo','faq','contact'];
     const spy = new IntersectionObserver((entries) => {
       entries.forEach(e => {
         if (e.isIntersecting) {
