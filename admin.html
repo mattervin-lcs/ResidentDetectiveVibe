@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Prompt Studio — Resident Detective</title>
+<meta name="description" content="Administrative studio for editing the prompt templates that generate Resident Detective mystery sessions." />
+<link rel="icon" type="image/png" href="assets/logo-mark.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@300;400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="bg-ambient"></div>
+<div class="bg-grid"></div>
+
+<div class="app-shell">
+
+  <header class="topbar">
+    <a class="topbar-logo" href="index.html" aria-label="Back to Resident Detective">
+      <img src="assets/logo.png" alt="Resident Detective" />
+    </a>
+    <div class="topbar-actions">
+      <span id="custom-badge" class="model-badge"></span>
+      <a href="index.html" class="btn-ghost-sm">← Back to the App</a>
+    </div>
+  </header>
+
+  <main class="view-root admin-wrap">
+
+    <div class="setup-intro anim-fade-up">
+      <div class="eyebrow">Administration</div>
+      <h1 class="headline">Prompt <em>Studio.</em></h1>
+      <p class="body-text" style="max-width:720px;">
+        This is where the writing engine lives. The two templates below are exactly what gets sent to Claude when
+        staff hit <strong>Generate the Mystery</strong> — edit them here to reshape how every session is written.
+        Placeholders in <code>{{double_braces}}</code> are filled in automatically from the session form.
+        Changes are saved in this browser and take effect on the very next generation.
+      </p>
+    </div>
+
+    <!-- SYSTEM TEMPLATE -->
+    <div class="card admin-card anim-fade-up" style="animation-delay:0.05s;">
+      <div class="admin-card-head">
+        <div>
+          <div class="card-label">System Prompt Template</div>
+          <p class="field-hint" style="margin-top:2px;">The writer's standing instructions — rules, tone, structure, adaptation settings. This is where the craft lives.</p>
+        </div>
+        <span class="tpl-count" id="system-count"></span>
+      </div>
+      <textarea id="system-template" class="tpl-textarea" rows="22" spellcheck="false"></textarea>
+    </div>
+
+    <!-- USER TEMPLATE -->
+    <div class="card admin-card anim-fade-up" style="animation-delay:0.1s;">
+      <div class="admin-card-head">
+        <div>
+          <div class="card-label">User Prompt Template</div>
+          <p class="field-hint" style="margin-top:2px;">The per-session request — the specific theme, cast, and settings for this generation.</p>
+        </div>
+        <span class="tpl-count" id="user-count"></span>
+      </div>
+      <textarea id="user-template" class="tpl-textarea" rows="10" spellcheck="false"></textarea>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="admin-actions anim-fade-up" style="animation-delay:0.12s;">
+      <button id="btn-save-templates" class="btn-primary" type="button">💾 Save Templates</button>
+      <button id="btn-preview-templates" class="btn-ghost" type="button">👁 Preview with Sample Session</button>
+      <button id="btn-reset-templates" class="btn-ghost btn-danger-ghost" type="button">↺ Reset to Defaults</button>
+      <span class="admin-status" id="admin-status"></span>
+    </div>
+
+    <!-- PLACEHOLDERS -->
+    <div class="card admin-card anim-fade-up" style="animation-delay:0.14s;">
+      <div class="card-label">Available Placeholders</div>
+      <p class="field-hint" style="margin-bottom:12px;">Click any placeholder to copy it. Unknown placeholders are left as-is in the prompt, so typos are easy to spot in the preview.</p>
+      <div class="chip-grid" id="placeholder-chips"></div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="card admin-card hidden anim-fade-up" id="preview-card">
+      <div class="admin-card-head">
+        <div class="card-label">Resolved Preview — Sample Session</div>
+        <span class="field-hint" id="preview-scenario-label"></span>
+      </div>
+      <div class="preview-block">
+        <div class="preview-label">SYSTEM →</div>
+        <pre class="preview-pre" id="preview-system"></pre>
+      </div>
+      <div class="preview-block">
+        <div class="preview-label">USER →</div>
+        <pre class="preview-pre" id="preview-user"></pre>
+      </div>
+    </div>
+
+    <!-- FUTURE: AGENT PIPELINE -->
+    <div class="anim-fade-up" style="margin-top:40px; animation-delay:0.16s;">
+      <div class="eyebrow">On the Roadmap</div>
+      <h2 class="headline" style="font-size:1.5rem;">The review <em>pipeline.</em></h2>
+      <p class="body-text" style="max-width:680px; margin-bottom:20px;">
+        The plan: after the Mystery Writer drafts a session, specialist agents review it before it ever reaches a printer.
+        Each reviewer below will get its own editable prompt slot right here in Prompt Studio when it comes online.
+      </p>
+      <div class="agent-grid">
+        <div class="agent-card agent-active">
+          <div class="agent-icon">✍️</div>
+          <div class="agent-name">Mystery Writer</div>
+          <div class="agent-status status-live">● Active</div>
+          <div class="agent-desc">Writes the full session from the templates above — title, cast, facilitator guide, clue cards.</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-icon">🔎</div>
+          <div class="agent-name">Continuity Reviewer</div>
+          <div class="agent-status">○ Planned</div>
+          <div class="agent-desc">Checks that clues add up, the culprit is solvable from the evidence, and no character sheet contradicts another.</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-icon">💙</div>
+          <div class="agent-name">Resident-Fit Reviewer</div>
+          <div class="agent-status">○ Planned</div>
+          <div class="agent-desc">Verifies reading level, tone, and content match the cognitive, mobility, and roleplay settings for this exact group.</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-icon">🖨️</div>
+          <div class="agent-name">Print Formatter</div>
+          <div class="agent-status">○ Planned</div>
+          <div class="agent-desc">Final pass for the physical packet — page lengths, large-print layout, and clean clue-card cuts.</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="prompts.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
